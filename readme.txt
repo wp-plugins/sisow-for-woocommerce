@@ -17,16 +17,16 @@ This plug-in contains all the payment methods from Sisow for WooCommerce.
 The plug-in works on WooCommerce 1.6 and WooCommerce 2.x.
 
 For now this plug-in contains the following payment methods:
-<li>
-<ul>- iDEAL</ul>
-<ul>- MisterCash</ul>
-<ul>- SofortBanking</ul>
-<ul>- OverBoeking</ul>
-<ul>- Ebill</ul>
-<ul>- Webshop GiftCard</ul>
-<ul>- Fijn cadeaukaart</ul>
-<ul>- PayPal</ul>
-</li>
+<ul>
+<li>- iDEAL</li>
+<li>- MisterCash</li>
+<li>- SofortBanking</li>
+<li>- OverBoeking</li>
+<li>- Ebill</li>
+<li>- Webshop GiftCard</li>
+<li>- Fijn cadeaukaart</li>
+<li>- PayPal</li>
+</ul>
 
 == Installation ==
 
