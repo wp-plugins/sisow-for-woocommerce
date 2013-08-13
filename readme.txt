@@ -61,6 +61,10 @@ Error on your server, check or CURL is enabled. If it is installed reboot your s
 
 A general error, please send the TA code to support@sisow.nl
 
+= When I start a Transaction I get a error message -9, TA3410 =
+
+Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd". Enable the first checkbox "Testen met behulp van simulator (toestaan)".
+
 == Screenshots ==
 
 1. The added plug-ins
