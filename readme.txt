@@ -2,14 +2,14 @@
 Plugin Name: Sisow Payment for WooCommerce
 Contributors: sisow
 Donate link: http://www.sisow.nl
-Tags: Sisow, WooCommerce, Payment, iDEAL, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
+Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
 Requires at least: 3.0.1
 Tested up to: 3.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Sisow for WooCommerce
+Sisow Payment methods for WooCommerce 1.6 and WooCommerce 2.X
 
 == Description ==
 
@@ -18,14 +18,15 @@ The plug-in works on WooCommerce 1.6 and WooCommerce 2.x.
 
 For now this plug-in contains the following payment methods:
 <ul>
-<li>- iDEAL</li>
-<li>- MisterCash</li>
-<li>- SofortBanking</li>
-<li>- OverBoeking</li>
-<li>- Ebill</li>
-<li>- Webshop GiftCard</li>
-<li>- Fijn cadeaukaart</li>
-<li>- PayPal</li>
+<li>iDEAL</li>
+<li>MisterCash</li>
+<li>SofortBanking</li>
+<li>CreditCard</li>
+<li>OverBoeking</li>
+<li>Ebill</li>
+<li>Webshop GiftCard</li>
+<li>Fijn cadeaukaart</li>
+<li>PayPal</li>
 </ul>
 
 == Installation ==
@@ -72,6 +73,9 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 2. The configuration in WooCommerce
 
 == Changelog ==
+
+= 3.3.0 =
+* Added CreditCard
 
 = 3.2.2 =
 * Fix for sequential order numbers

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow iDEAL
 Plugin URI: http://www.sisow.nl
 Description: The Sisow iDEAL Plugin for WooCommerce
-Version: 3.2.2
+Version: 3.3.0
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
