@@ -1,4 +1,5 @@
 === Plugin Name ===
+Plugin Name: Sisow Payment for WooCommerce
 Contributors: sisow
 Donate link: http://www.sisow.nl
 Tags: Sisow, WooCommerce, Payment, iDEAL, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
