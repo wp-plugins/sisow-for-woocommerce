@@ -1,4 +1,4 @@
-=== Plugin Name ===
+=== WooCommerce - Sisow Payment Options ===
 Plugin Name: Sisow Payment for WooCommerce
 Contributors: sisow
 Donate link: http://www.sisow.nl
