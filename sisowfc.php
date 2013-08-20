@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Fijncadeau
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Fijncadeau Plugin for WooCommerce
-Version: 3.2.2
+Version: 3.3.1
 Author: Sisow
 Author URI: http://www.sisow.nl
 */

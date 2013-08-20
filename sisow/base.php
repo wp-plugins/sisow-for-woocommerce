@@ -27,7 +27,7 @@ class SisowBase extends WC_Payment_Gateway
 		$this->paymentfeelabel	= $this->settings['paymentfeelabel'];
 		$this->paymentfee		= $this->settings['paymentfee'];
 		$this->paymentfeetax	= $this->settings['paymentfeetax'];
-		$this->notify_url   	= str_replace( 'https:', 'http:', add_query_arg( 'wc-api', 'WC_sisow_' . $this->paymentcode, home_url( '/' ) ) );
+		$this->notify_url   	= add_query_arg( 'wc-api', 'WC_sisow_' . $this->paymentcode, home_url( '/' ) );
 		
 		if($this->paymentcode == 'ecare')
 		{

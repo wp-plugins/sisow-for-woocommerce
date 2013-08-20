@@ -73,6 +73,8 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 3.3.1 =
+* Notify SSL Fix
 
 = 3.3.0 =
 * Added CreditCard
@@ -89,6 +91,11 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 3.3.1 =
+* Bug fix
+
+= 3.3.0 =
+* Added CreditCard
 
 = 3.2.2 =
 You can use this plug-in with sequential order numbers
