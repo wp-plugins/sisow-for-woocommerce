@@ -1,12 +1,13 @@
 <?php
 class SisowBase extends WC_Payment_Gateway
 {
-	function _start($code, $name)
+	function _start($code, $name, $redirect)
 	{
 		global $woocommerce;
 		
-		$this->paymentcode = $code;
-		$this->paymentname = $name;
+		$this->paymentcode 	= $code;
+		$this->paymentname 	= $name;
+		$this->redirect 	= $redirect;
 				
 		$this->id				= 'sisow' . $this->paymentcode;
 		$this->method_title 	= __($this->paymentname, 'woothemes');
@@ -28,13 +29,8 @@ class SisowBase extends WC_Payment_Gateway
 		$this->paymentfee		= $this->settings['paymentfee'];
 		$this->paymentfeetax	= $this->settings['paymentfeetax'];
 		$this->notify_url   	= add_query_arg( 'wc-api', 'WC_sisow_' . $this->paymentcode, home_url( '/' ) );
-		
-		if($this->paymentcode == 'ecare')
-		{
-			$this->mailinvoice		= $this->settings['mailinvoice'];
-			$this->directinvoice	= $this->settings['directinvoice'];
-		}
-		elseif($this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill')
+
+		if($this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill')
 		{
 			$this->includelink		= $this->settings['includelink'];
 			$this->days				= $this->settings['days'];
@@ -43,9 +39,7 @@ class SisowBase extends WC_Payment_Gateway
 		{
 			$this->klarnaid			= $this->settings['klarnaid'];
 		}
-		
-		add_action( 'woocommerce_api_wc_sisow_' . $this->paymentcode, array( $this, 'check_notify' ) );
-		
+				
 		if(!isset($woocommerce->version) || $woocommerce->version < 2)
 		{
 			add_action( 'woocommerce_update_options_payment_gateways', array( &$this, 'process_admin_options' ) );
@@ -54,6 +48,9 @@ class SisowBase extends WC_Payment_Gateway
 		{
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 		}
+		
+		//notify actie
+		add_action( 'woocommerce_api_wc_sisow_' . $this->paymentcode, array( $this, 'check_notify' ) );
 		
 		//payment fee actions        
 		add_action( 'wp_enqueue_scripts', array(&$this, 'add_script') );
@@ -124,25 +121,14 @@ class SisowBase extends WC_Payment_Gateway
 								'type' => 'text', 
 								'description' => __( "Number of days payment is valid.", 'woocommerce' ), 
 								'default' => __("", 'woocommerce')
-							);
-			if($this->paymentcode == 'ebill')
-			{
-				$velden['includelink'] = array(
+								);
+			
+			$velden['includelink'] = array(
 									'title' => __( 'Include bank info', 'woocommerce' ), 
 									'type' => 'checkbox', 
-									'label' => __( 'Add Sisow bank account information, the customer can also pay through a bank transfer.', 'woocommerce' ), 
+									'label' => ($this->paymentcode == 'ebill') ? __( 'Add Sisow bank account information, the customer can also pay through a bank transfer.', 'woocommerce' ) : __( 'Add an iDEAL link in the mail, the customer can also pay with iDEAL.', 'woocommerce' ), 
 									'default' => 'yes'
-								);
-			}
-			else
-			{
-				$velden['includelink'] = array(
-									'title' => __( 'Include paymentlink', 'woocommerce' ), 
-									'type' => 'checkbox', 
-									'label' => __( 'Add an iDEAL link in the mail, the customer can also pay with iDEAL.', 'woocommerce' ), 
-									'default' => 'yes'
-								);
-			}
+								);			
 		}
 		
 		$velden['paymentfeelabel'] = array(
@@ -328,14 +314,6 @@ class SisowBase extends WC_Payment_Gateway
 		global $woocommerce;
 			
 		$fout = false;
-		if($this->paymentcode == 'ecare')
-		{
-			if($_POST['sisow_initials_'.$this->paymentcode] == '')
-			{
-				$woocommerce->add_error(__('Vul uw inita(a)l(en) in.', 'woothemes'));
-				$fout = true;
-			}
-		}
 
 		if($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc')
 		{
@@ -346,7 +324,7 @@ class SisowBase extends WC_Payment_Gateway
 			}
 		}
 		
-		if($this->paymentcode == 'ecare' || $this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc')
+		if($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc')
 		{
 			if($_POST['sisow_gender_'.$this->paymentcode] == '')
 			{
@@ -375,7 +353,7 @@ class SisowBase extends WC_Payment_Gateway
 
 			$sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
 			$sisow->purchaseId = 	$order_number;
-			$sisow->description = 	$this->settings['omschrijving'] . ' ' . $order_number;
+			$sisow->description = 	(isset($this->settings['omschrijving']) && $this->settings['omschrijving'] != '') ? rtrim($this->settings['omschrijving']) . ' ' . $order_number : get_bloginfo('name') . ' ' . $order_number;
 			$sisow->amount = 		$order->order_total;
 			$sisow->payment = 		$this->paymentcode;
 			$sisow->entranceCode = 	$order_id;
@@ -383,22 +361,11 @@ class SisowBase extends WC_Payment_Gateway
 			$sisow->cancelUrl = 	$order->get_cancel_order_url();
 			$sisow->notifyUrl = 	$this->notify_url;
 			
-			if($this->settings['testmode'] == 'yes')
-			{
-				$sisow->issuerId = '99';
-			}
-			else
-			{
+			if($this->paymentcode == 'ideal')
 				$sisow->issuerId = $_POST['issuerid'];
-			}
-		
+					
 			if(($ex = $sisow->TransactionRequest($this->prep($order_id))) < 0)
-			{
-				if($this->paymentcode == 'ecare')
-				{
-					$order->add_order_note( __('Payment with ' . $this->paymentname . ' had failed.', 'woothemes') );
-				}
-				
+			{				
 				if($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc')
 				{
 					$woocommerce->add_error($sisow->errorMessage);
@@ -410,7 +377,7 @@ class SisowBase extends WC_Payment_Gateway
 			}
 			else
 			{
-				if($this->paymentcode == 'ecare' || $this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill' || $this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc')
+				if($this->redirect === false)
 				{
 					if($sisow->pendingKlarna)
 					{
@@ -424,6 +391,11 @@ class SisowBase extends WC_Payment_Gateway
 						$this->sisow = $sisow;
 						$this->notify();
 					}
+					
+					return array(
+							'result' => 'success',
+							'redirect' => $this->get_return_url($order));
+							
 				}
 				else
 				{
@@ -565,7 +537,7 @@ class SisowBase extends WC_Payment_Gateway
 		$this->notify();
 	}
 	
-	public function notify()
+	private function notify()
 	{
 		$order = new WC_Order( $this->orderid );
 		$sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
@@ -577,46 +549,38 @@ class SisowBase extends WC_Payment_Gateway
 		}
 		else
 		{
-			if($order->status != 'processing' && $order->status != 'completed')
+			if($order->status != 'processing' || $order->status != 'completed')
 			{
-				//else
+				switch($sisow->status)
 				{
-					switch($sisow->status)
-					{
-						case 'Success':
-							$order->add_order_note( __($this->paymentname . ' transaction Success', 'woocommerce') );
-							$order->payment_complete();
-							break;
-						case 'Reservation':
-							$order->add_order_note( __('Reservation made for ' . $this->paymentname, 'woocommerce') );
-							$order->payment_complete();
-							break;
-						case 'Cancelled':
-							$order->add_order_note( __($this->paymentname . ' transaction was cancelled.', 'woocommerce') );
-							break;
-						case 'Expired':
-							$order->add_order_note( __($this->paymentname . ' transaction has expired.', 'woocommerce') );
-							break;
-						case 'Failure':
-							$order->add_order_note( __($this->paymentname . ' transaction request failure.', 'woocommerce') );
-							break;
-						default:
-							$order->update_status('on-hold', __($this->paymentname . ' transaction Pending', 'woocommerce') );
-							break;
-					}
+					case 'Success':
+						$order->add_order_note( __($this->paymentname . ' transaction Success', 'woocommerce') );
+						$order->payment_complete();
+						break;
+					case 'Reservation':
+						$order->add_order_note( __('Reservation made for ' . $this->paymentname, 'woocommerce') );
+						$order->payment_complete();
+						break;
+					case 'Cancelled':
+						$order->cancel_order( $this->paymentname . __(': transaction was cancelled.', 'woocommerce'));
+						break;
+					case 'Expired':
+						$order->cancel_order( $this->paymentname . __(': transaction was expired.', 'woocommerce'));
+						break;
+					case 'Failure':
+						$order->cancel_order( $this->paymentname . __(': transaction was failed.', 'woocommerce'));
+						break;
+					default:
+						$order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce') );
+						break;
 				}
 			}
 			
-			if($this->paymentcode == 'ecare' || $this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill' || $this->paymentcode == 'klarna'|| $this->paymentcode == 'klarnaacc')
-			{	
-				add_post_meta($this->orderid, 'status', $sisow->status);
-				add_post_meta($this->orderid, 'trxid', $sisow->trxId);
-				if($this->settings['directinvoice'] == 'true')
-					add_post_meta($this->orderid, 'factuur', $sisow->documentId);
-					
-				wp_redirect($this->get_return_url($order) ); exit;
-			}
-			exit;
+			add_post_meta($this->orderid, 'status', $sisow->status);
+			add_post_meta($this->orderid, 'trxid', $sisow->trxId);
+			
+			if($this->redirect === true)
+				exit;
 		}
 	}
 	
@@ -737,7 +701,7 @@ function sisow_payment_fee($cart) {
 			if ( method_exists($woocommerce->cart, 'add_fee') ) {
 				$cart->add_fee( $paymentfeelabel, $paymentFee, true, $settings['paymentfeetax'] );
 			}
-			
+						
 			if ( isset($woocommerce->checkout->posted) && !empty($woocommerce->checkout->posted) ) {
 				$woocommerce->checkout->posted['processing_fee_label']  = $paymentfeelabel;
 				$woocommerce->checkout->posted['processing_fee']        = $paymentFee;
@@ -848,7 +812,7 @@ function admin_order_totals( $order_id ) {
 
 	$label          = get_post_meta( $order_id, '_processing_fee_label', true );
 	$processing_fee = get_post_meta( $order_id, '_processing_fee', true );
-
+	
 	if (! $processing_fee) return;
 
 	?>
