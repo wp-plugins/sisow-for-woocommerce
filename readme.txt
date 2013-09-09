@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
 Requires at least: 3.0.1
 Tested up to: 3.6
-Stable tag: 3.3.4
+Stable tag: 3.3.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,6 +73,9 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 3.3.5 =
+* Fix: Major bug fix
+
 = 3.3.4 =
 * Fix: Thank you page Ebill and OverBoeking
 

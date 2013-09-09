@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Podium Cadeaukaart
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Podium Cadeaukaart Plugin for WooCommerce
-Version: 3.3.4
+Version: 3.3.5
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -21,7 +21,7 @@ function woocommerce_podium_init()
 	{
 		function __construct() 
 		{ 
-			$this->_start('podium', 'Sisow Podium Cadeaukaart');
+			$this->_start('podium', 'Sisow Podium Cadeaukaart', true);
 		}
 	}
 	
