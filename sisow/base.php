@@ -549,7 +549,7 @@ class SisowBase extends WC_Payment_Gateway
 		}
 		else
 		{
-			if($order->status != 'processing' || $order->status != 'completed')
+			if($order->status != 'processing' && $order->status != 'completed')
 			{
 				switch($sisow->status)
 				{
@@ -561,16 +561,16 @@ class SisowBase extends WC_Payment_Gateway
 						$order->add_order_note( __('Reservation made for ' . $this->paymentname, 'woocommerce') );
 						$order->payment_complete();
 						break;
-					case 'Cancelled':
-						$order->cancel_order( $this->paymentname . __(': transaction was cancelled.', 'woocommerce'));
-						break;
 					case 'Expired':
 						$order->cancel_order( $this->paymentname . __(': transaction was expired.', 'woocommerce'));
 						break;
 					case 'Failure':
 						$order->cancel_order( $this->paymentname . __(': transaction was failed.', 'woocommerce'));
 						break;
-					default:
+					case 'Open':
+						$order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce') );
+						break;
+					case 'Pending':
 						$order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce') );
 						break;
 				}

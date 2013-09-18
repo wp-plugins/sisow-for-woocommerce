@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
 Requires at least: 3.0.1
 Tested up to: 3.6
-Stable tag: 3.3.5
+Stable tag: 3.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,6 @@ For now this plug-in contains the following payment methods:
 <li>OverBoeking</li>
 <li>Ebill</li>
 <li>Webshop GiftCard</li>
-<li>Fijn cadeaukaart</li>
 <li>PayPal</li>
 </ul>
 
@@ -73,6 +72,10 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 3.3.6 =
+* Fix: Expired notification wouldn't overwrite a Success
+* Fix: Cart won't be empty when a transaction is cancelled
+
 = 3.3.5 =
 * Fix: Major bug fix
 
@@ -97,6 +100,10 @@ Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd"
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 3.3.6 =
+* Fix: Expired notification wouldn't overwrite a Success
+* Fix: Cart won't be empty when a transaction is cancelled
+
 = 3.3.1 =
 * Bug fix
 
