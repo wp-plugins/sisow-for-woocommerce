@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 3.3.9
+  Version: 3.3.10
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -34,14 +34,13 @@ function woocommerce_ideal_init() {
             $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
             
             $text = '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
-
-            $testmode = ($this->testmode == 'yes') ? true : false;
             
             $text .= '&nbsp;&nbsp;Kies uw bank&nbsp;&nbsp;<select name="issuerid">';
             $text .= '<option value="">Kies uw bank...</option>';
             
             $options = '';
             $sisow->DirectoryRequest($options, false, $testmode);
+
             foreach ($options as $value => $bank) {
                 $text .= '<option value="' . $value . '">' . $bank . '</option>';
             }

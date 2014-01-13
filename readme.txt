@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
 Requires at least: 3.0.1
 Tested up to: 3.8
-Stable tag: 3.3.9
+Stable tag: 3.3.10
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,7 @@ For now this plug-in contains the following payment methods:
 <li>OverBoeking</li>
 <li>Ebill</li>
 <li>Webshop GiftCard</li>
+<li>Fijn cadeaukaart</li>
 <li>PayPal</li>
 </ul>
 
@@ -66,19 +67,12 @@ A general error, please send the TA code to support@sisow.nl
 
 Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd". Enable the first checkbox "Testen met behulp van simulator (toestaan)".
 
-= When I recieve an TA.... error =
-
-Send an e-mail to support@sisow.nl with the given TA code.
-
 == Screenshots ==
 
 1. The added plug-ins
 2. The configuration in WooCommerce
 
 == Changelog ==
-
-=3.3.8=
-* Fix: redirect from ebill/overboeking
 
 = 3.3.0 =
 * Added CreditCard
@@ -95,9 +89,6 @@ Send an e-mail to support@sisow.nl with the given TA code.
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
-
-=3.3.8=
-Correct redirect for Sisow Ebill/OverBoeking
 
 = 3.2.2 =
 You can use this plug-in with sequential order numbers
