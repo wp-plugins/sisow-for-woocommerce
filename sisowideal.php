@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 3.3.8
+  Version: 4.0.0
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -33,13 +33,8 @@ function woocommerce_ideal_init() {
             
             $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
             
-            //$text = '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
-            $text = $sisow->getIdealForm($testmode);
+            $text = '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
 
-            if ($paymentfee_total > 0) {
-                $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
-            }
-            /*
             $testmode = ($this->testmode == 'yes') ? true : false;
             
             $text .= '&nbsp;&nbsp;Kies uw bank&nbsp;&nbsp;<select name="issuerid">';
@@ -50,7 +45,11 @@ function woocommerce_ideal_init() {
             foreach ($options as $value => $bank) {
                 $text .= '<option value="' . $value . '">' . $bank . '</option>';
             }
-            $text .= '</select>';*/
+            $text .= '</select>';
+			
+			 if ($paymentfee_total > 0) {
+                $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
+            }
 
             echo wpautop(wptexturize($text));
         }
