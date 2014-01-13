@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow ebill
 Plugin URI: http://www.sisow.nl
 Description: The Sisow ebill Plugin for WooCommerce
-Version: 3.3.7
+Version: 3.3.8
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -21,7 +21,22 @@ function woocommerce_ebill_init()
 	{
 		function __construct() 
 		{
-			$this->_start('ebill', 'Sisow ebill', true);
+			$this->paymentcode 	= 'ebill';
+			$this->paymentname 	= 'Sisow ebill';
+			$this->redirect 	= false;
+			parent::__construct();
+		}
+		
+		public function payment_fields() 
+		{
+			global $woocommerce;
+			$paymentfee_total = $this->getFee();
+			
+			$text .= 'U heeft ervoor gekozen om uw bestelling per digitale acceptgiro over te maken.
+				De verwerking hiervan is uitbesteed aan Sisow B.V.<br/>
+				U ontvangt een e-mail met daarin informatie hoe u uw betaling kunt voltooien.';
+			
+			echo wpautop( wptexturize($text));
 		}
 	}
 	

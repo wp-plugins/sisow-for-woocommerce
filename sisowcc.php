@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow CreditCard
 Plugin URI: http://www.sisow.nl
 Description: The Sisow CreditCard Plugin for WooCommerce
-Version: 3.3.7
+Version: 3.3.8
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -21,7 +21,10 @@ function woocommerce_creditcard_init()
 	{
 		function __construct() 
 		{
-			$this->_start('creditcard', 'Sisow CreditCard', true);
+			$this->paymentcode 	= 'creditcard';
+			$this->paymentname 	= 'Sisow CreditCard';
+			$this->redirect 	= true;
+			parent::__construct();
 		}
 	}
 	

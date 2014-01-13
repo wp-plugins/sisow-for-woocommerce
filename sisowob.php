@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow OverBoeking
 Plugin URI: http://www.sisow.nl
 Description: The Sisow OverBoeking Plugin for WooCommerce
-Version: 3.3.7
+Version: 3.3.8
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -21,7 +21,26 @@ function woocommerce_overboeking_init()
 	{
 		function __construct() 
 		{ 
-			$this->_start('overboeking', 'Sisow OverBoeking', false);
+			$this->paymentcode 	= 'overboeking';
+			$this->paymentname 	= 'Sisow OverBoeking';
+			$this->redirect 	= false;
+			
+			parent::__construct();
+		}
+		
+		public function payment_fields() 
+		{
+			global $woocommerce;
+			$paymentfee_total = $this->getFee();
+			
+			if($paymentfee_total > 0)
+				$text .= '&nbsp;&nbsp;<b>'.$this->paymentfeelabel . ': '.woocommerce_price($paymentfee_total).'</b></br>';
+			
+			$text .= 'U heeft ervoor gekozen om uw bestelling per bank/giro over te maken.
+				De verwerking hiervan is uitbesteed aan Sisow B.V.<br/>
+				U ontvangt een e-mail met daarin informatie hoe u uw betaling kunt voltooien.';
+			
+			echo wpautop( wptexturize($text));
 		}
 	}
 	

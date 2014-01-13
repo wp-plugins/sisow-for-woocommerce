@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Webshop Giftcard
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Webshop Giftcard Plugin for WooCommerce
-Version: 3.3.7
+Version: 3.3.8
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -21,7 +21,10 @@ function woocommerce_webshop_init()
 	{
 		function __construct() 
 		{ 
-			$this->_start('webshop', 'Sisow Webshop Giftcard', true);
+			$this->paymentcode 	= 'webshop';
+			$this->paymentname 	= 'Sisow Webshop Giftcard';
+			$this->redirect 	= true;
+			parent::__construct();
 		}
 	}
 	
