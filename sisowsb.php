@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow SofortBanking
 Plugin URI: http://www.sisow.nl
 Description: The Sisow SofortBanking Plugin for WooCommerce
-Version: 3.3.10
+Version: 3.3.11
 Author: Sisow
 Author URI: http://www.sisow.nl
 */

@@ -1,5 +1,8 @@
 <?php
 
+ error_reporting(E_ALL);
+ ini_set("display_errors", 1);
+
 class SisowBase extends WC_Payment_Gateway {
 
     function __construct() {
@@ -21,9 +24,12 @@ class SisowBase extends WC_Payment_Gateway {
         $this->merchantKey = $this->settings['merchantkey'];
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
-        $this->paymentfeelabel = $this->settings['paymentfeelabel'];
-        $this->paymentfee = $this->settings['paymentfee'];
-        $this->paymentfeetax = $this->settings['paymentfeetax'];
+		if(isset($this->settings['paymentfeelablel']))
+			$this->paymentfeelabel = $this->settings['paymentfeelabel'];
+		if(isset($this->settings['paymentfee']))
+			$this->paymentfee = $this->settings['paymentfee'];
+		if(isset($this->settings['paymentfeetax']))
+			$this->paymentfeetax = $this->settings['paymentfeetax'];
         $this->notify_url = add_query_arg('wc-api', 'WC_sisow_' . $this->paymentcode, home_url('/'));
 
         if ($this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill') {
@@ -161,7 +167,7 @@ class SisowBase extends WC_Payment_Gateway {
 
         $paymentfee_subtotal = $this->calculate_fee_for($this->settings, $woocommerce->cart->subtotal);
         $paymentfee_total = $paymentfee_subtotal + $this->calculate_tax($this->settings, $paymentfee_subtotal);
-        $this->paymentfeelabel = ($this->paymentfeelabel != '') ? $this->paymentfeelabel : 'Payment Fee';
+        $this->paymentfeelabel = (isset($this->paymentfeelabel)) ? $this->paymentfeelabel : 'Payment Fee';
 
         return $paymentfee_total;
     }

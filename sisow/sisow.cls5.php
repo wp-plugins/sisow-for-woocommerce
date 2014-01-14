@@ -32,7 +32,15 @@ class Sisow
 	// Invoice data
 	public $invoiceNo;
 	public $documentId;
-	public $documentUrl;
+	
+	// Klarna Factuur/Account
+	public $pendingKlarna;
+	public $monthly;
+	public $pclass;
+	public $intrestRate;
+	public $invoiceFee;
+	public $months;
+	public $startFee;
 
 	// Result/check data
 	public $trxId;
@@ -48,6 +56,8 @@ class Sisow
 	const statusExpired = "Expired";
 	const statusFailure = "Failure";
 	const statusOpen = "Open";
+	const statusReservation = "Reservation";
+	const statusPending = "Pending";
 
 	public function __construct($merchantid, $merchantkey) {
 		$this->merchantId = $merchantid;
@@ -74,6 +84,7 @@ class Sisow
 	}
 
 	public function send($method, array $keyvalue = NULL, $return = 1) {
+	
 		$url = "https://www.sisow.nl/Sisow/iDeal/RestHandler.ashx/" . $method;
 		$options = array(
 			CURLOPT_POST => 1,
@@ -88,6 +99,10 @@ class Sisow
 		$ch = curl_init();
 		curl_setopt_array($ch, $options);
 		$this->response = curl_exec($ch);
+				
+		if (!$this->response) {
+			$this->errorMessage = curl_error($ch);
+		}
 		curl_close($ch); 
 		if (!$this->response) {
 			return false;
@@ -164,31 +179,31 @@ class Sisow
 	public function TransactionRequest($keyvalue = NULL) {
 		$this->trxId = $this->issuerUrl = "";
 		if (!$this->merchantId) {
-			$this->errorMessage = 'No Merchant ID';
+			$this->errorMessage = "No merchantid";
 			return -1;
 		}
 		if (!$this->merchantKey) {
-			$this->errorMessage = 'No Merchant Key';
+			$this->errorMessage = "No merchantkey";
 			return -2;
 		}
 		if (!$this->purchaseId) {
-			$this->errorMessage = 'No purchaseid';
+			$this->errorMessage = "No purchaseid";
 			return -3;
 		}
 		if ($this->amount < 0.45) {
-			$this->errorMessage = 'Amount < 0.45';
+			$this->errorMessage = "Amount < 0.45";
 			return -4;
 		}
 		if (!$this->description) {
-			$this->errorMessage = 'No description';
+			$this->errorMessage = "No description";
 			return -5;
 		}
 		if (!$this->returnUrl) {
-			$this->errorMessage = 'No returnurl';
+			$this->errorMessage = "No returnurl";
 			return -6;
 		}
 		if (!$this->issuerId && !$this->payment) {
-			$this->errorMessage = 'No issuerid or no payment method';
+			$this->errorMessage = "No issuer or payment";
 			return -7;
 		}
 		if (!$this->entranceCode)
@@ -211,12 +226,16 @@ class Sisow
 				$pars[$k] = $v;
 			}
 		}
-		if (!$this->send("TransactionRequest", $pars))
+		if (!$this->send("TransactionRequest", $pars)) {
+			if (!$this->errorMessage) {
+				$this->errorMessage = "No transaction";
+			}
 			return -8;
+		}
 		$this->trxId = $this->parse("trxid");
 		$this->issuerUrl = urldecode($this->parse("issuerurl"));
-		$this->invoiceNo = $this->parse("invoiceno");
 		$this->documentId = $this->parse("documentid");
+		$this->pendingKlarna = $this->parse("pendingklarna") == "true";
 		if (!$this->issuerUrl) {
 			$this->error();
 			return -9;
@@ -257,6 +276,25 @@ class Sisow
 		return 0;
 	}
 
+	// FetchMonthlyRequest
+	public function FetchMonthlyRequest($amt = false) {
+		if (!$amt) $amt = round($this->amount * 100);
+		else $amt = round($amt * 100);
+		$pars = array();
+		$pars["merchantid"] = $this->merchantId;
+		$pars["amount"] = $amt;
+		$pars["sha1"] = sha1($amt . $this->merchantId . $this->merchantKey);
+		if (!$this->send("FetchMonthlyRequest", $pars))
+			return -1;
+		$this->monthly = $this->parse("monthly");
+		$this->pclass = $this->parse("pclass");
+		$this->intrestRate = $this->parse("intrestRate");
+		$this->invoiceFee = $this->parse("invoiceFee");
+		$this->months = $this->parse("months");
+		$this->startFee = $this->parse("startFee");
+		return $this->monthly;
+	}
+
 	// RefundRequest
 	public function RefundRequest($trxid) {
 		$pars = array();
@@ -265,12 +303,12 @@ class Sisow
 		$pars["sha1"] = sha1($trxid . $this->merchantId . $this->merchantKey);
 		if (!$this->send("RefundRequest", $pars))
 			return -1;
-		$this->documentId = $this->parse("refundid");
-		if (!$this->documentId) {
+		$id = $this->parse("id");
+		if (!$id) {
 			$this->error();
 			return -2;
 		}
-		return $this->documentId;
+		return $id;
 	}
 
 	// InvoiceRequest
@@ -287,14 +325,29 @@ class Sisow
 		if (!$this->send("InvoiceRequest", $pars))
 			return -1;
 		$this->invoiceNo = $this->parse("invoiceno");
-		$this->documentUrl = $this->parse("documenturl");
 		if (!$this->invoiceNo) {
 			$this->error();
 			return -2;
 		}
-                
 		$this->documentId = $this->parse("documentid");
-		return 0; //$this->invoiceNo;
+		return 0;
+	}
+
+	// CreditInvoiceRequest
+	public function CreditInvoiceRequest($trxid) {
+		$pars = array();
+		$pars["merchantid"] = $this->merchantId;
+		$pars["trxid"] = $trxid;
+		$pars["sha1"] = sha1($trxid . $this->merchantId . $this->merchantKey);
+		if (!$this->send("CreditInvoiceRequest", $pars))
+			return -1;
+		$this->invoiceNo = $this->parse("invoiceno");
+		if (!$this->invoiceNo) {
+			$this->error();
+			return -2;
+		}
+		$this->documentId = $this->parse("documentid");
+		return 0;
 	}
 
 	// CancelReservationRequest
@@ -307,48 +360,34 @@ class Sisow
 			return -1;
 		return 0;
 	}
-
-	// CreditInvoiceRequest
-	public function CreditInvoiceRequest($trxid, $keyvalue = NULL) {
-		$pars = array();
-		$pars["merchantid"] = $this->merchantId;
-		$pars["trxid"] = $trxid;
-		$pars["sha1"] = sha1($trxid . $this->merchantId . $this->merchantKey);
-		if ($keyvalue) {
-			foreach ($keyvalue as $k => $v) {
-				$pars[$k] = $v;
-			}
+	
+	public function GetLink($msg = 'hier', $method = '') {
+		if (!$method) {
+			if (!$msg)
+				$link = 'https://www.sisow.nl/Sisow/Opdrachtgever/download.aspx?merchantid=' .
+					$this->merchantId . '&doc=' . $this->documentId . '&sha1=' .
+					sha1($this->documentId . $this->merchantId . $this->merchantKey);
+			else
+				$link = '<a href="https://www.sisow.nl/Sisow/Opdrachtgever/download.aspx?merchantid=' .
+					$this->merchantId . '&doc=' . $this->documentId . '&sha1=' .
+					sha1($this->documentId . $this->merchantId . $this->merchantKey) . '">' . $msg . '</a>';
+			return $link;
 		}
-		if (!$this->send("CreditInvoiceRequest", $pars))
-			return -1;
-		$this->invoiceNo = $this->parse("invoiceno");
-		$this->documentUrl = $this->parse("documenturl");
-		if (!$this->invoiceNo) {
-			$this->error();
-			return -2;
+		if ($method == 'make') {
 		}
-		$this->documentId = $this->parse("documentid");
-		return 0; //$this->invoiceNo;
 	}
+	
+	public function logSisow($error, $order_id = 0, $dir = '', $act = 'TransactionRequest') {
+        $filename = ($dir != '') ? $dir . '/log_sisow.log' : 'log_sisow.log';
+        $order_id = (($order_id == 0 || $order_id == '') && $this->purchaseId != '') ? $this->purchaseId : $order_id;
+
+        $f = fopen($filename, 'a+');
+        fwrite($f, "\n" . "|***" . date("d-m-Y H:i:s") . "*******" . "\n");
+        fwrite($f, "| - " . $act . " - " . "\n");
+        fwrite($f, "| Order: " . $order_id . "\n");
+        fwrite($f, "| Error: " . $error . "\n");
+        fwrite($f, "----------------------------" . "\n");
+        fclose($f);
+    }
 }
-
-/*$t = new Sisow("2537278813", "f1bcac04ef461e7a84757e6394ba205b1f63936e");
-$select = "";
-$t->DirectoryRequest($select); // $select wordt gevuld met array("01" => "ABN Amro Bank", "02" => "ASN Bank", ...)
-$t->DirectoryRequest($select, true); // $select wordt gevuld met een dropdown "<select ...><option...>...</select>"
-$t->issuerId = "10";
-$t->purchaseId = "20110329001";
-$t->description = "Bestelling 20110329001";
-$t->amount = 3.44;
-$t->notifyUrl = "http://...";		// Verwerkings URL; niet verplicht, kan ook via returnURL
-$t->returnUrl = "http://...";		// Success URL
-$t->cancelUrl = "http://...";		// Niet Success URL; niet aanwezig, dan wordt returnURL hiervoor gebruikt
-$t->TransactionRequest();
-$t->StatusRequest();
-$t->StatusRequest("0050000715466154");
-if ($t->status == Sisow::statusSuccess)
-{
-	echo "Gelukt";
-}*/
-
 ?>
