@@ -1,8 +1,5 @@
 <?php
 
- error_reporting(E_ALL);
- ini_set("display_errors", 1);
-
 class SisowBase extends WC_Payment_Gateway {
 
     function __construct() {
