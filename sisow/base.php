@@ -389,9 +389,15 @@ class SisowBase extends WC_Payment_Gateway {
             exit;
 		}
 		
-        return array(
-            'result' => 'success',
-            'redirect' => $this->get_return_url($order));			
+		if($this->redirect == true){		
+			wp_redirect( $this->get_return_url($order));
+		}
+		else
+		{
+			return array(
+				'result' => 'success',
+				'redirect' => 	''		);
+		}
 		exit;
     }
 
@@ -447,7 +453,7 @@ function sisow_payment_fee($cart) {
         $gw = $woocommerce->checkout->posted['payment_method'];
     }
 
-    if (strpos($gw, 'sisow') !== false) {
+    if (isset($gw) && strpos($gw, 'sisow') !== false) {
         $class = 'WC_Sisow_' . str_replace('sisow', '', $gw);
 
         if (!class_exists($class))
