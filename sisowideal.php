@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 3.3.13
+  Version: 3.3.14
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -32,8 +32,15 @@ function woocommerce_ideal_init() {
             $testmode = ($this->testmode == 'yes') ? true : false;
             
             $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
+			
+			$text = '';
+			if($this->merchantId == '' || $this->merchantKey == '')
+				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+			
+			if($this->testmode == 'yes')
+				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text = '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
+            $text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
 
             $testmode = ($this->testmode == 'yes') ? true : false;
             
@@ -52,7 +59,7 @@ function woocommerce_ideal_init() {
 			 if ($paymentfee_total > 0) {
                 $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
             }
-
+			
             echo wpautop(wptexturize($text));
         }
 

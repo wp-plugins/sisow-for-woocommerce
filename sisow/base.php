@@ -24,12 +24,20 @@ class SisowBase extends WC_Payment_Gateway {
         $this->merchantKey = $this->settings['merchantkey'];
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
-		if(isset($this->settings['paymentfeelablel']))
-			$this->paymentfeelabel = $this->settings['paymentfeelabel'];
-		if(isset($this->settings['paymentfee']))
+		
+		if(isset($this->settings['paymentfee']) && $this->settings['paymentfee'] > 0 && $this->settings['paymentfee'] != '')
+		{
 			$this->paymentfee = $this->settings['paymentfee'];
-		if(isset($this->settings['paymentfeetax']))
 			$this->paymentfeetax = $this->settings['paymentfeetax'];
+			$this->paymentfeelabel =(isset($this->settings['paymentfeelabel']) && $this->settings['paymentfeelabel'] != '') ? $this->settings['paymentfeelabel'] : 'Payment Fee';
+		}
+		else
+		{
+			$this->paymentfee = 0;
+			$this->paymentfeetax = 0;
+			$this->paymentfeelabel = '';
+		}
+		
         $this->notify_url = add_query_arg('wc-api', 'WC_sisow_' . $this->paymentcode, home_url('/'));
 
         if ($this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill') {
@@ -172,15 +180,6 @@ class SisowBase extends WC_Payment_Gateway {
         return $paymentfee_total;
     }
 
-    public function payment_fields() {
-        $paymentfee_total = $this->getFee();
-        if ($paymentfee_total > 0) {
-            $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
-        } else {
-            return true;
-        }
-    }
-
     public function process_payment($order_id) {
         global $woocommerce;
 
@@ -206,7 +205,15 @@ class SisowBase extends WC_Payment_Gateway {
             if (($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc') && $sisow->errorMessage != '') {
                 $error = $sisow->errorMessage;
             } else {
-                $error = __('Betalen met ' . $this->paymentname . ' is nu niet mogelijk (' . $ex . ';' . $sisow->errorCode . '). Kies een andere betaalmethode.', 'woothemes');
+				if($sisow->errorCode == 'TA3410')
+				{
+					$error = 'Testen op uw Sisow account is niet toegestaan.<br>
+								Log in op www.sisow.nl en kies voor "Mijn Profiel" tabblad "Geavanceerd" en schakel de optie "testen met behulp van simulator" in.';
+				}
+				else
+				{
+					$error = __('Betalen met ' . $this->paymentname . ' is nu niet mogelijk (' . $ex . ';' . $sisow->errorCode . '). Kies een andere betaalmethode.', 'woothemes');
+				}
             }
             
             $sisow->logSisow($error, $order_id, ABSPATH);
@@ -566,12 +573,17 @@ function process_checkout($order_id, $posted) {
 function calculate_fee_for($settings, $total) {
     global $woocommerce;
     $charge = 0;
-
-    if ($settings['paymentfee'] > 0) {
-        $charge = $settings['paymentfee'];
-    } else {
-        $charge = $total * (($settings['paymentfee'] * -1) / 100.0);
-    }
+	
+	if(isset($settings['paymentfee']) && $settings['paymentfee'] != '')
+	{
+		if ($settings['paymentfee'] > 0) {
+			$charge = $settings['paymentfee'];
+		} else {
+			$charge = $total * (($settings['paymentfee'] * -1) / 100.0);
+		}
+	}
+	else
+		$charge = 0;
 
     return $charge;
 }
