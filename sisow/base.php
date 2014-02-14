@@ -25,7 +25,7 @@ class SisowBase extends WC_Payment_Gateway {
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
 		
-		if(isset($this->settings['paymentfee']) && $this->settings['paymentfee'] > 0 && $this->settings['paymentfee'] != '')
+		if(isset($this->settings['paymentfee']) && $this->settings['paymentfee'] != '')
 		{
 			$this->paymentfee = $this->settings['paymentfee'];
 			$this->paymentfeetax = $this->settings['paymentfeetax'];
@@ -412,7 +412,7 @@ class SisowBase extends WC_Payment_Gateway {
         global $woocommerce;
         $charge = 0;
 
-        if ($settings['paymentfee'] > 0) {
+        if (isset($settings['paymentfee']) && $settings['paymentfee'] > 0) {
             $charge = $settings['paymentfee'];
         } else {
             $charge = $total * (($settings['paymentfee'] * -1) / 100.0);
@@ -423,14 +423,16 @@ class SisowBase extends WC_Payment_Gateway {
 
     private function calculate_tax($settings, $charge) {
         $amount = 0;
-
-        $prices_include_tax = get_option('woocommerce_prices_include_tax') == 'yes' ? true : false;
-
-        $_tax = new WC_Tax();
-        $tax_rates = $_tax->get_shop_base_rate($settings['paymentfeetax']);
-        $taxes = $_tax->calc_tax($charge, $tax_rates, $prices_include_tax);
-        $amount = $_tax->get_tax_total($taxes);
-
+	
+		if(isset($settings['paymentfeetax']) && $settings['paymentfeetax'] > 0)
+		{
+			$prices_include_tax = get_option('woocommerce_prices_include_tax') == 'yes' ? true : false;
+			$_tax = new WC_Tax();
+			$tax_rates = $_tax->get_shop_base_rate($settings['paymentfeetax']);
+			$taxes = $_tax->calc_tax($charge, $tax_rates, $prices_include_tax);
+			$amount = $_tax->get_tax_total($taxes);
+		}
+			
         return $amount;
     }
 
@@ -576,7 +578,21 @@ function calculate_fee_for($settings, $total) {
 	
 	if(isset($settings['paymentfee']) && $settings['paymentfee'] != '')
 	{
-		if ($settings['paymentfee'] > 0) {
+		if(strpos($settings['paymentfee'], ';') > 0)
+		{
+			$taxes = explode(";", $settings['paymentfee']);
+			$charge = 0;
+			if($taxes[0] > 0)
+				$charge += $taxes[0];
+			else
+				$charge += $total * (($taxes[0] * -1) / 100.0);
+			
+			if($taxes[1] > 0)
+				$charge += $taxes[1];
+			else
+				$charge += $total * (($taxes[1] * -1) / 100.0);
+		}
+		else if ($settings['paymentfee'] > 0) {
 			$charge = $settings['paymentfee'];
 		} else {
 			$charge = $total * (($settings['paymentfee'] * -1) / 100.0);
