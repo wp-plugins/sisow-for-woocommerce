@@ -77,7 +77,10 @@ Send an e-mail to support@sisow.nl with the given TA code.
 
 == Changelog ==
 
-=3.3.8=
+= 3.3.16 =
+* Fix: correct result page for ebill/overboeking
+
+= 3.3.8 =
 * Fix: redirect from ebill/overboeking
 
 = 3.3.0 =
@@ -96,7 +99,10 @@ Send an e-mail to support@sisow.nl with the given TA code.
 
 == Upgrade Notice ==
 
-=3.3.8=
+= 3.3.16 =
+Fix: correct result page for ebill/overboeking
+
+= 3.3.8 =
 Correct redirect for Sisow Ebill/OverBoeking
 
 = 3.2.2 =
