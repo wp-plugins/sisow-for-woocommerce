@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow ebill
 Plugin URI: http://www.sisow.nl
 Description: The Sisow ebill Plugin for WooCommerce
-Version: 3.3.15
+Version: 3.3.16
 Author: Sisow
 Author URI: http://www.sisow.nl
 */

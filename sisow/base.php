@@ -97,7 +97,7 @@ class SisowBase extends WC_Payment_Gateway {
             $velden['klarnaid'] = array(
                 'title' => __('Klarna ID', 'woocommerce'),
                 'type' => 'text',
-                'description' => __('This is your Klarna ID which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
+                'description' => __('This is your Klarna ID, you get this ID from Klarna.', 'woocommerce'),
                 'default' => __("", 'woocommerce')
             );
         }
@@ -131,38 +131,41 @@ class SisowBase extends WC_Payment_Gateway {
                 'default' => 'yes'
             );
         }
+		
+		if($this->paymentcode != 'klarnaacc')
+		{
+			$velden['paymentfeelabel'] = array(
+				'title' => __('Payment fee label:', 'woocommerce'),
+				'type' => 'text',
+				'description' => __('Set the order total text for the payment fee', 'woocommerce'),
+				'default' => __("", 'woocommerce')
+			);
+			
+			$desc = ($this->paymentcode != 'klarna') ? 'Set the payment fee amount (negative amount is %)' : 'Set the payment fee amount.';
+			$velden['paymentfee'] = array(
+				'title' => __('Payment fee:', 'woocommerce'),
+				'type' => 'text',
+				'description' => __($desc, 'woocommerce'),
+				'default' => __("", 'woocommerce')
+			);
 
-        $velden['paymentfeelabel'] = array(
-            'title' => __('Payment fee label:', 'woocommerce'),
-            'type' => 'text',
-            'description' => __('Set the order total text for the payment fee', 'woocommerce'),
-            'default' => __("", 'woocommerce')
-        );
+			$classes = array_filter(array_map('trim', explode("\n", get_option('woocommerce_tax_classes'))));
+			$classes_options = array();
+			$classes_options[''] = __('Standard', 'woocommerce');
+			if ($classes) {
+				foreach ($classes as $class) :
+					$classes_options[sanitize_title($class)] = $class;
+				endforeach;
+			}
 
-        $velden['paymentfee'] = array(
-            'title' => __('Payment fee:', 'woocommerce'),
-            'type' => 'text',
-            'description' => __('Set the payment fee amount (negative amount is %)', 'woocommerce'),
-            'default' => __("", 'woocommerce')
-        );
-
-        $classes = array_filter(array_map('trim', explode("\n", get_option('woocommerce_tax_classes'))));
-        $classes_options = array();
-        $classes_options[''] = __('Standard', 'woocommerce');
-        if ($classes) {
-            foreach ($classes as $class) :
-                $classes_options[sanitize_title($class)] = $class;
-            endforeach;
-        }
-
-        $velden['paymentfeetax'] = array(
-            'title' => __('Payment fee:', 'woocommerce'),
-            'type' => 'select',
-            'options' => $classes_options,
-            'description' => __('Tax class for the payment fee.', 'woocommerce'),
-            'default' => __("", 'woocommerce')
-        );
-
+			$velden['paymentfeetax'] = array(
+				'title' => __('Payment fee:', 'woocommerce'),
+				'type' => 'select',
+				'options' => $classes_options,
+				'description' => __('Tax class for the payment fee.', 'woocommerce'),
+				'default' => __("", 'woocommerce')
+			);
+		}
 
 
         $this->form_fields = $velden;
@@ -396,14 +399,11 @@ class SisowBase extends WC_Payment_Gateway {
             exit;
 		}
 		
-		if($this->redirect == true){		
-			wp_redirect( $this->get_return_url($order));
-		}
-		else
+		if($this->redirect == false)
 		{
 			return array(
 				'result' => 'success',
-				'redirect' => 	''		);
+				'redirect' => 	$this->get_return_url($order)		);
 		}
 		exit;
     }
