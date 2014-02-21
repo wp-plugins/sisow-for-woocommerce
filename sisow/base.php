@@ -405,6 +405,10 @@ class SisowBase extends WC_Payment_Gateway {
 				'result' => 'success',
 				'redirect' => 	$this->get_return_url($order)		);
 		}
+		else
+		{
+			header('Location: ' . $this->get_return_url($order));
+		}
 		exit;
     }
 

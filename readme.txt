@@ -77,6 +77,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 
 == Changelog ==
 
+= 3.3.17 =
+* Fix: correct result page for iDEAL
+
 = 3.3.16 =
 * Fix: correct result page for ebill/overboeking
 
