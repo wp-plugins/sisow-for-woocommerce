@@ -2,10 +2,10 @@
 Plugin Name: Sisow Payment for WooCommerce
 Contributors: sisow
 Donate link: http://www.sisow.nl
-Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal
+Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
-Tested up to: 3.8
-Stable tag: 3.3.17
+Tested up to: 3.9
+Stable tag: 3.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,14 +18,17 @@ The plug-in works on WooCommerce 1.6 and WooCommerce 2.x.
 
 For now this plug-in contains the following payment methods:
 <ul>
+<li>CreditCard</li>
+<li>Ebill</li>
 <li>iDEAL</li>
+<li>Maestro</li>
+<li>Mastercard</li>
 <li>MisterCash</li>
 <li>SofortBanking</li>
-<li>CreditCard</li>
 <li>OverBoeking</li>
-<li>Ebill</li>
-<li>Webshop GiftCard</li>
 <li>PayPal</li>
+<li>Visa</li>
+<li>Webshop GiftCard</li>
 </ul>
 
 == Installation ==
@@ -77,6 +80,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 
 == Changelog ==
 
+= 3.5.0 =
+* Added: Maestro/MasterCard/Visa
+
 = 3.3.17 =
 * Fix: correct result page for iDEAL
 
@@ -101,6 +107,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+
+= 3.5.0 =
+Added: Maestro/MasterCard/Visa
 
 = 3.3.16 =
 Fix: correct result page for ebill/overboeking

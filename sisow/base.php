@@ -22,6 +22,8 @@ class SisowBase extends WC_Payment_Gateway {
         $this->title = $this->settings['title'];
         $this->merchantId = $this->settings['merchantid'];
         $this->merchantKey = $this->settings['merchantkey'];
+		$this->shopId = (isset($this->settings['shopid'])) ? $this->settings['shopid'] : '';
+		$this->klarnaId = (isset($this->settings['klarnaid'])) ? $this->settings['klarnaid'] : '';
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
 		
@@ -90,6 +92,13 @@ class SisowBase extends WC_Payment_Gateway {
             'title' => __('Sisow Merchant Key', 'woocommerce'),
             'type' => 'text',
             'description' => __('This is your Merchant Key which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
+            'default' => __("", 'woocommerce')
+        );
+		
+		$velden['shopid'] = array(
+            'title' => __('Sisow ShopId', 'woocommerce'),
+            'type' => 'text',
+            'description' => __('This is your Shop Id which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
             'default' => __("", 'woocommerce')
         );
 
@@ -176,7 +185,7 @@ class SisowBase extends WC_Payment_Gateway {
     public function getFee() {
         global $woocommerce;
 
-        $paymentfee_subtotal = $this->calculate_fee_for($this->settings, $woocommerce->cart->subtotal);
+        $paymentfee_subtotal = $this->calculate_fee_for($this->settings, $woocommerce->cart->subtotal + $woocommerce->cart->shipping_total);
         $paymentfee_total = $paymentfee_subtotal + $this->calculate_tax($this->settings, $paymentfee_subtotal);
         $this->paymentfeelabel = (isset($this->paymentfeelabel)) ? $this->paymentfeelabel : 'Payment Fee';
 
@@ -190,7 +199,8 @@ class SisowBase extends WC_Payment_Gateway {
 
         $order_number = ltrim($order->get_order_number(), '#');
 
-        $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
+        $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey'], $this->settings['shopid']);
+		$sisow->setPayPalLocale($order->billing_country);
         $sisow->purchaseId = $order_number;
         $sisow->description = (isset($this->settings['omschrijving']) && $this->settings['omschrijving'] != '') ? rtrim($this->settings['omschrijving']) . ' ' . $order_number : get_bloginfo('name') . ' ' . $order_number;
         $sisow->amount = $order->order_total;
@@ -274,13 +284,14 @@ class SisowBase extends WC_Payment_Gateway {
         } else {
             $arg['billing_phone'] = $order->billing_phone;
         }
-        if (isset($this->dob)) {
+        if (isset($this->dob))
             $arg['birthdate'] = $this->dob;
-        }
+			
+		if(isset($this->pclass))
+			$arg['pclass'] = $this->pclass;
 
-        if (isset($this->gender)) {
+        if (isset($this->gender))
             $arg['gender'] = $this->gender;
-        }
 
         $arg['amount'] = round($order->order_total * 100.0, 0);
         $arg['tax'] = round(($order->order_tax + $order->order_shipping_tax) * 100.0, 0);
@@ -358,9 +369,9 @@ class SisowBase extends WC_Payment_Gateway {
 
     private function notify() {
         $order = new WC_Order($this->orderid);
-        $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
+        $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey'], $this->settings['shopid']);
 
-        if ($order->status != 'processing' && $order->status != 'completed') {
+        if (($order->status != 'processing' && $order->status != 'completed') || $sisow->status == Sisow::statusReversed || $sisow->status == Sisow::statusRefunded){
             if (($ex = $sisow->StatusRequest($this->trxid)) < 0) {
                 echo 'fail' . $ex;
                 exit;
@@ -382,6 +393,12 @@ class SisowBase extends WC_Payment_Gateway {
                         break;
                     case 'Failure':
                         $order->cancel_order($this->paymentname . __(': transaction was failed.', 'woocommerce'));
+                        break;
+					case Sisow::statusRefunded:
+                        $order->cancel_order($this->paymentname . __(': transaction was '.Sisow::statusRefunded.'.', 'woocommerce'));
+                        break;
+					case Sisow::statusReversed:
+                        $order->cancel_order($this->paymentname . __(': transaction was '.Sisow::statusReversed.'.', 'woocommerce'));
                         break;
                     case 'Pending':
                         $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce'));
@@ -415,12 +432,26 @@ class SisowBase extends WC_Payment_Gateway {
     private function calculate_fee_for($settings, $total) {
         global $woocommerce;
         $charge = 0;
-
-        if (isset($settings['paymentfee']) && $settings['paymentfee'] > 0) {
-            $charge = $settings['paymentfee'];
-        } else {
-            $charge = $total * (($settings['paymentfee'] * -1) / 100.0);
-        }
+		
+		if(strpos($settings['paymentfee'], ';') > 0)
+		{
+			$taxes = explode(";", $settings['paymentfee']);
+			$charge = 0;
+			if($taxes[0] > 0)
+				$charge += $taxes[0];
+			else
+				$charge += $total * (($taxes[0] * -1) / 100.0);
+			
+			if($taxes[1] > 0)
+				$charge += $taxes[1];
+			else
+				$charge += $total * (($taxes[1] * -1) / 100.0);
+		}
+		else if ($settings['paymentfee'] > 0) {
+			$charge = $settings['paymentfee'];
+		} else {
+			$charge = $total * (($settings['paymentfee'] * -1) / 100.0);
+		}
 
         return $charge;
     }
@@ -476,7 +507,7 @@ function sisow_payment_fee($cart) {
 
         $settings = $payment->settings;
         $paymentFee = 0;
-        $cart_total = $cart->subtotal;
+        $cart_total = $cart->subtotal + $cart->shipping_total;
         $add_note = false;
 
         $paymentFee = calculate_fee_for($settings, $cart_total);

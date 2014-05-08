@@ -9,6 +9,7 @@ class Sisow
 	// Merchant data
 	private $merchantId;
 	private $merchantKey;
+	private $shopId;
 
 	// Transaction data
 	public $payment;	// empty=iDEAL; sofort=DIRECTebanking; mistercash=MisterCash; ...
@@ -21,17 +22,21 @@ class Sisow
 	public $returnUrl;	// mandatory
 	public $cancelUrl;
 	public $callbackUrl;
+	private $locale;
 
 	// Status data
 	public $status;
 	public $timeStamp;
 	public $consumerAccount;
+	public $consumerIban;
+	public $consumerBic;
 	public $consumerName;
 	public $consumerCity;
 	
 	// Invoice data
 	public $invoiceNo;
 	public $documentId;
+	public $documentUrl;
 	
 	// Klarna Factuur/Account
 	public $pendingKlarna;
@@ -56,12 +61,15 @@ class Sisow
 	const statusExpired = "Expired";
 	const statusFailure = "Failure";
 	const statusOpen = "Open";
-	const statusReservation = "Reservation";
-	const statusPending = "Pending";
+	const statusReversed = "Reversed";
+	const statusRefunded = "Refunded";
 
-	public function __construct($merchantid, $merchantkey) {
+	public function __construct($merchantid, $merchantkey, $shopid = '') {
 		$this->merchantId = $merchantid;
 		$this->merchantKey = $merchantkey;
+		$this->shopId = $shopid;
+		
+		$this->locale = '';
 	}
 
 	private function error() {
@@ -84,7 +92,6 @@ class Sisow
 	}
 
 	public function send($method, array $keyvalue = NULL, $return = 1) {
-	
 		$url = "https://www.sisow.nl/Sisow/iDeal/RestHandler.ashx/" . $method;
 		$options = array(
 			CURLOPT_POST => 1,
@@ -99,7 +106,6 @@ class Sisow
 		$ch = curl_init();
 		curl_setopt_array($ch, $options);
 		$this->response = curl_exec($ch);
-				
 		if (!$this->response) {
 			$this->errorMessage = curl_error($ch);
 		}
@@ -210,6 +216,7 @@ class Sisow
 			$this->entranceCode = $this->purchaseId;
 		$pars = array();
 		$pars["merchantid"] = $this->merchantId;
+		$pars["shopid"] = $this->shopId;
 		$pars["payment"] = $this->payment;
 		$pars["issuerid"] = $this->issuerId;
 		$pars["purchaseid"] = $this->purchaseId; 
@@ -220,7 +227,11 @@ class Sisow
 		$pars["cancelurl"] = $this->cancelUrl;
 		$pars["callbackurl"] = $this->callbackUrl;
 		$pars["notifyurl"] = $this->notifyUrl;
-		$pars["sha1"] = sha1($this->purchaseId . $this->entranceCode . round($this->amount * 100) . $this->merchantId . $this->merchantKey);
+		
+		if($this->locale != '')
+			$pars["locale"] = $this->locale;
+			
+		$pars["sha1"] = sha1($this->purchaseId . $this->entranceCode . round($this->amount * 100) . $this->shopId . $this->merchantId . $this->merchantKey);
 		if ($keyvalue) {
 			foreach ($keyvalue as $k => $v) {
 				$pars[$k] = $v;
@@ -233,8 +244,22 @@ class Sisow
 			return -8;
 		}
 		$this->trxId = $this->parse("trxid");
-		$this->issuerUrl = urldecode($this->parse("issuerurl"));
+		$url = $this->parse("issuerurl");
+		$this->issuerUrl = urldecode($url);
+		
 		$this->documentId = $this->parse("documentid");
+		/*
+		if($this->payment == 'klarna' || $this->payment == 'klarnaacc')
+			$sha = sha1($this->trxId . $this->merchantId . $this->merchantKey);
+		else
+			$sha = sha1($this->trxId . $url . $this->merchantId . $this->merchantKey);
+		
+		if($this->parse("sha1") != $sha)
+		{
+			$this->errorMessage = 'Invalid SHA returned';
+			return -9;
+		}
+		*/
 		$this->pendingKlarna = $this->parse("pendingklarna") == "true";
 		if (!$this->issuerUrl) {
 			$this->error();
@@ -256,8 +281,9 @@ class Sisow
 		$this->trxId = $trxid;
 		$pars = array();
 		$pars["merchantid"] = $this->merchantId;
+		$pars["shopid"] = $this->shopId;
 		$pars["trxid"] = $this->trxId;
-		$pars["sha1"] = sha1($this->trxId . $this->merchantId . $this->merchantKey);
+		$pars["sha1"] = sha1($this->trxId . $this->shopId . $this->merchantId . $this->merchantKey);
 		if (!$this->send("StatusRequest", $pars))
 			return -4;
 		$this->status = $this->parse("status");
@@ -268,11 +294,20 @@ class Sisow
 		$this->timeStamp = $this->parse("timestamp");
 		$this->amount = $this->parse("amount") / 100.0;
 		$this->consumerAccount = $this->parse("consumeraccount");
+		$this->consumerIban = $this->parse("consumeriban");
+		$this->consumerBic = $this->parse("consumerbic");
 		$this->consumerName = $this->parse("consumername");
 		$this->consumerCity = $this->parse("consumercity");
 		$this->purchaseId = $this->parse("purchaseid");
 		$this->description = $this->parse("description");
 		$this->entranceCode = $this->parse("entrancecode");
+		
+		if( $this->parse("sha1") != sha1($this->trxId . $this->status . $this->amount * 100.0 . $this->purchaseId . $this->entranceCode . $this->consumerAccount . $this->merchantId . $this->merchantKey) )
+		{
+			$this->errorMessage = "Invalid SHA returned";
+			return -6;
+		}
+		
 		return 0;
 	}
 
@@ -308,6 +343,12 @@ class Sisow
 			$this->error();
 			return -2;
 		}
+		if( $this->parse("sha1") != sha1($id . $this->merchantId . $this->merchantKey) )
+		{
+			$this->errorMessage = "Invalid SHA returned";
+			return -6;
+		}
+		
 		return $id;
 	}
 
@@ -330,6 +371,14 @@ class Sisow
 			return -2;
 		}
 		$this->documentId = $this->parse("documentid");
+		$this->documentUrl = $this->parse("documenturl");
+		
+		if( $this->parse("sha1") != sha1($this->invoiceNo . $this->documentId . $this->merchantId . $this->merchantKey) )
+		{
+			$this->errorMessage = "Invalid SHA returned";
+			return -6;
+		}
+		
 		return 0;
 	}
 
@@ -347,6 +396,14 @@ class Sisow
 			return -2;
 		}
 		$this->documentId = $this->parse("documentid");
+		$this->documentUrl = $this->parse("documenturl");
+		
+		if( $this->parse("sha1") != sha1($this->invoiceNo . $this->documentId . $this->merchantId . $this->merchantKey) )
+		{
+			$this->errorMessage = "Invalid SHA returned";
+			return -6;
+		}
+		
 		return 0;
 	}
 
@@ -358,36 +415,22 @@ class Sisow
 		$pars["sha1"] = sha1($trxid . $this->merchantId . $this->merchantKey);
 		if (!$this->send("CancelReservationRequest", $pars))
 			return -1;
+		
+		if( $this->parse("sha1") != sha1($trxid . $this->merchantId . $this->merchantKey) )
+		{
+			$this->errorMessage = "Invalid SHA returned";
+			return -6;
+		}
 		return 0;
 	}
 	
-	public function GetLink($msg = 'hier', $method = '') {
-		if (!$method) {
-			if (!$msg)
-				$link = 'https://www.sisow.nl/Sisow/Opdrachtgever/download.aspx?merchantid=' .
-					$this->merchantId . '&doc=' . $this->documentId . '&sha1=' .
-					sha1($this->documentId . $this->merchantId . $this->merchantKey);
-			else
-				$link = '<a href="https://www.sisow.nl/Sisow/Opdrachtgever/download.aspx?merchantid=' .
-					$this->merchantId . '&doc=' . $this->documentId . '&sha1=' .
-					sha1($this->documentId . $this->merchantId . $this->merchantKey) . '">' . $msg . '</a>';
-			return $link;
-		}
-		if ($method == 'make') {
-		}
-	}
-	
-	public function logSisow($error, $order_id = 0, $dir = '', $act = 'TransactionRequest') {
-        $filename = ($dir != '') ? $dir . '/log_sisow.log' : 'log_sisow.log';
-        $order_id = (($order_id == 0 || $order_id == '') && $this->purchaseId != '') ? $this->purchaseId : $order_id;
-
-        $f = fopen($filename, 'a+');
-        fwrite($f, "\n" . "|***" . date("d-m-Y H:i:s") . "*******" . "\n");
-        fwrite($f, "| - " . $act . " - " . "\n");
-        fwrite($f, "| Order: " . $order_id . "\n");
-        fwrite($f, "| Error: " . $error . "\n");
-        fwrite($f, "----------------------------" . "\n");
-        fclose($f);
-    }
+	public function setPayPalLocale($countryIso)
+	{
+		$supported = array('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB','FR','IT','NL','PL','PT','RU','US');
+		if(in_array($countryIso, $supported))
+			$this->locale = $countryIso;
+		else
+			$this->locale = 'US';
+	}	
 }
 ?>
