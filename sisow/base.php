@@ -228,8 +228,7 @@ class SisowBase extends WC_Payment_Gateway {
 					$error = __('Betalen met ' . $this->paymentname . ' is nu niet mogelijk (' . $ex . ';' . $sisow->errorCode . '). Kies een andere betaalmethode.', 'woothemes');
 				}
             }
-            
-            $sisow->logSisow($error, $order_id, ABSPATH);
+
             $woocommerce->add_error($error);
         } else {
             if ($this->redirect === false && $sisow->pendingKlarna) {
