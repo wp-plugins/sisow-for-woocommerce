@@ -228,6 +228,11 @@ class Sisow
 		$pars["callbackurl"] = $this->callbackUrl;
 		$pars["notifyurl"] = $this->notifyUrl;
 		
+		if(strlen($keyvalue['billing_countrycode']) == 2)
+			$pars["locale"] = $this->setLocale($keyvalue['billing_countrycode']);
+		else
+			$pars["locale"] = $this->setLocale("");
+		
 		if($this->locale != '')
 			$pars["locale"] = $this->locale;
 			
@@ -329,7 +334,7 @@ class Sisow
 		$this->startFee = $this->parse("startFee");
 		return $this->monthly;
 	}
-
+	
 	// RefundRequest
 	public function RefundRequest($trxid) {
 		$pars = array();
@@ -424,13 +429,48 @@ class Sisow
 		return 0;
 	}
 	
-	public function setPayPalLocale($countryIso)
+	public function setLocale($countryIso)
 	{
-		$supported = array('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB','FR','IT','NL','PL','PT','RU','US');
-		if(in_array($countryIso, $supported))
-			$this->locale = $countryIso;
+		$supported = array("US");
+		
+		switch($this->payment)
+		{
+			case "paypalec":
+				$supported = array('AU','AT','BE','BR','CA','CH','CN','DE','ES','GB','FR','IT','NL','PL','PT','RU','US');
+				break;
+			case "mistercash":
+				$supported = array('NL', 'BE', 'DE', 'IT', 'ES', 'PT', 'BR', 'SE', 'FR');
+				break;
+			case "creditcard":
+				$supported = array('NL', 'BE', 'DE', 'IT', 'ES', 'PT', 'BR', 'SE', 'FR');
+				break;
+			case "maestro":
+				$supported = array('NL', 'BE', 'DE', 'IT', 'ES', 'PT', 'BR', 'SE', 'FR');
+				break;
+			case "mastercard":
+				$supported = array('NL', 'BE', 'DE', 'IT', 'ES', 'PT', 'BR', 'SE', 'FR');
+				break;
+			case "visa":
+				$supported = array('NL', 'BE', 'DE', 'IT', 'ES', 'PT', 'BR', 'SE', 'FR');
+				break;
+			default:
+				return "NL";
+				break;
+		}
+		
+		$lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+		$lang = strtoupper($lang);
+		
+		$lang = (!isset($lang) || $lang == "") ? $countryIso : $lang;
+		
+		if($lang == "")
+			return "US";
+		if(in_array($lang, $supported))
+			return $lang;
 		else
-			$this->locale = 'US';
+			return 'US';
 	}	
+	
+	
 }
 ?>

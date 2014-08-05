@@ -27,6 +27,9 @@ class SisowBase extends WC_Payment_Gateway {
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
 		
+		if(isset($this->settings['completed']))
+			$this->_completed = $this->settings['completed'] == "yes" ? true : false;
+				
 		if(isset($this->settings['paymentfee']) && $this->settings['paymentfee'] != '')
 		{
 			$this->paymentfee = $this->settings['paymentfee'];
@@ -141,6 +144,14 @@ class SisowBase extends WC_Payment_Gateway {
             );
         }
 		
+		$velden['completed'] = array(
+            'title' => __('Completed', 'woocommerce'),
+            'type' => 'checkbox',
+            'label' => __('Orderstatus Completed', 'woocommerce'),
+            'description' => __('If enabled set the order to completed, disabled the order will be processing.', 'woocommerce'),
+            'default' => 'no'
+        );
+		
 		if($this->paymentcode != 'klarnaacc')
 		{
 			$velden['paymentfeelabel'] = array(
@@ -200,7 +211,6 @@ class SisowBase extends WC_Payment_Gateway {
         $order_number = ltrim($order->get_order_number(), '#');
 
         $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey'], $this->settings['shopid']);
-		$sisow->setPayPalLocale($order->billing_country);
         $sisow->purchaseId = $order_number;
         $sisow->description = (isset($this->settings['omschrijving']) && $this->settings['omschrijving'] != '') ? rtrim($this->settings['omschrijving']) . ' ' . $order_number : get_bloginfo('name') . ' ' . $order_number;
         $sisow->amount = $order->order_total;
@@ -209,6 +219,7 @@ class SisowBase extends WC_Payment_Gateway {
         $sisow->returnUrl = $this->notify_url; //$this->get_return_url($order);
         $sisow->cancelUrl = $order->get_cancel_order_url();
         $sisow->notifyUrl = $this->notify_url;
+		$sisow->callbackUrl = $this->notify_url;
 
         if ($this->paymentcode == 'ideal') {
             $sisow->issuerId = $this->issuerid;
@@ -280,6 +291,7 @@ class SisowBase extends WC_Payment_Gateway {
         $arg['billing_countrycode'] = $order->billing_country;
         if (isset($this->phone ) ) {
             $arg['billing_phone'] = $this->phone;
+			$arg['shipping_phone'] = $this->phone;
         } else {
             $arg['billing_phone'] = $order->billing_phone;
         }
@@ -327,7 +339,7 @@ class SisowBase extends WC_Payment_Gateway {
         if (isset($order->order_shipping)) {
             if ($order->order_shipping > 0) {
                 $item_loop++;
-                $arg['product_id_' . $item_loop] = 'Shipping';
+                $arg['product_id_' . $item_loop] = 'shipping';
                 $arg['product_description_' . $item_loop] = 'Verzendkosten';
                 $arg['product_quantity_' . $item_loop] = '1';
                 $arg['product_netprice_' . $item_loop] = round($order->order_shipping, 2) * 100;
@@ -337,6 +349,26 @@ class SisowBase extends WC_Payment_Gateway {
                 $arg['product_taxrate_' . $item_loop] = round($tax, 2) * 100;
             }
         }
+		
+		foreach($order->get_fees() as $fee)
+		{
+			if($fee['name'] == $this->paymentfeelabel)
+			{
+				$tax = new WC_Tax();
+				$tax_rates = $tax->get_rates();
+				$taxes = $tax->calc_tax( $fee['item_meta']['_line_total']['0'], $tax_rates );
+				
+				$item_loop++;
+                $arg['product_id_' . $item_loop] = 'paymentfee';
+                $arg['product_description_' . $item_loop] = $fee['name'];
+                $arg['product_quantity_' . $item_loop] = '1';
+                $arg['product_netprice_' . $item_loop] = round($fee['item_meta']['_line_total']['0'], 2) * 100;
+                $arg['product_total_' . $item_loop] = round($fee['item_meta']['_line_total']['0'] + $taxes['1'], 2) * 100;
+                $arg['product_nettotal_' . $item_loop] = round($fee['item_meta']['_line_total']['0'], 2) * 100;
+                $arg['product_tax_' . $item_loop] = round($taxes['1'], 2) * 100;
+                $arg['product_taxrate_' . $item_loop] = round($tax_rates["1"]["rate"], 2) * 100;
+			}
+		}
 
         if ($this->settings['testmode'] == 'yes') {
             $arg['testmode'] = 'true';
@@ -369,7 +401,7 @@ class SisowBase extends WC_Payment_Gateway {
     private function notify() {
         $order = new WC_Order($this->orderid);
         $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey'], $this->settings['shopid']);
-
+		
         if (($order->status != 'processing' && $order->status != 'completed') || $sisow->status == Sisow::statusReversed || $sisow->status == Sisow::statusRefunded){
             if (($ex = $sisow->StatusRequest($this->trxid)) < 0) {
                 echo 'fail' . $ex;
@@ -379,6 +411,9 @@ class SisowBase extends WC_Payment_Gateway {
                     case 'Success':
                         $order->add_order_note(__($this->paymentname . ' transaction Success', 'woocommerce'));
                         $order->payment_complete();
+						
+						if(isset($this->_completed) && $this->_completed)
+							$order->update_status('completed', 'Sisow set status to Completed');
                         break;
                     case 'Reservation':
                         $order->add_order_note(__('Reservation made for ' . $this->paymentname, 'woocommerce'));
@@ -482,7 +517,7 @@ add_action('woocommerce_process_shop_order_meta', 'process_shop_order', 100, 2);
 
 function sisow_payment_fee($cart) {
     global $woocommerce;
-
+	
     if (isset($_POST['payment_method'])) {
         $gw = $_POST['payment_method'];
     } elseif (isset($_POST['post_data'])) {
@@ -495,7 +530,7 @@ function sisow_payment_fee($cart) {
     } elseif (isset($woocommerce->checkout->posted) && !empty($woocommerce->checkout->posted)) {
         $gw = $woocommerce->checkout->posted['payment_method'];
     }
-
+		
     if (isset($gw) && strpos($gw, 'sisow') !== false) {
         $class = 'WC_Sisow_' . str_replace('sisow', '', $gw);
 

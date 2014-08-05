@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow MisterCash
 Plugin URI: http://www.sisow.nl
 Description: The Sisow MisterCash Plugin for WooCommerce
-Version: 3.5.1
+Version: 3.5.2
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
