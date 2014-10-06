@@ -245,7 +245,7 @@ class SisowBase extends WC_Payment_Gateway {
             if ($this->redirect === false && $sisow->pendingKlarna) {
 
                 $order->update_status('on-hold', __($this->paymentname . ' waiting for Klarna', 'woocommerce'));
-                $woocommerce->add_error(__('Voor uw betaling met Klarna is een extra controle nodig. U ontvangt binnen 24 uur bericht.', 'woothemes'));
+                //$woocommerce->add_error(__('Voor uw betaling met Klarna is een extra controle nodig. U ontvangt binnen 24 uur bericht.', 'woothemes'));
 
                 return array(
                     'result' => 'success',
