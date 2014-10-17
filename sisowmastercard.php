@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Mastercard
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Mastercard Plugin for WooCommerce
-Version: 3.5.3
+Version: 3.5.4
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -37,7 +37,7 @@ function woocommerce_mastercard_init()
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text .= '<img alt="mastercard" title="" src="http://www.credit-card-logos.com/images/mastercard_credit-card-logos/mastercard_logo_8.gif" width="67" height="42" border="0" />';
+            $text .= '<img alt="mastercard" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/mastercard.png'.'" width="67" height="42" border="0" />';
 			if ($paymentfee_total > 0) {
 				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 
