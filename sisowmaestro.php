@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Maestro
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Maestro Plugin for WooCommerce
-Version: 3.5.4
+Version: 3.5.5
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
