@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 3.5.5
+  Version: 4.2.0
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -69,7 +69,7 @@ function woocommerce_ideal_init() {
             $this->issuerid = filter_input(INPUT_POST, 'sisow_bank');
 
             if (!$this->issuerid) {
-                $woocommerce->add_error(__('Kies uw bank.', 'woothemes'));
+				wc_add_notice( __( 'Kies uw bank.', 'woocommerce' ), 'error' );
                 return false;
             } else {
                 return true;

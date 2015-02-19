@@ -4,8 +4,8 @@ Contributors: sisow
 Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
-Tested up to: 4.0
-Stable tag: 3.5.5
+Tested up to: 4.1
+Stable tag: 4.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,7 @@ For now this plug-in contains the following payment methods:
 <ul>
 <li>CreditCard</li>
 <li>Ebill</li>
+<li>Focum AchterafBetalen</li>
 <li>iDEAL</li>
 <li>Maestro</li>
 <li>Mastercard</li>
@@ -79,8 +80,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 2. The configuration in WooCommerce
 
 == Changelog ==
-= 3.5.5 =
-* Fix: logo fix
+= 4.2.0 =
+* Added: Focum AchterafBetalen
+* Fix: compatibility with WooCommerce 2.3.4
 
 = 3.5.4 =
 * Fix: removed http link from checkout page
@@ -118,8 +120,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
-= 3.5.5 =
-Fix: logo fix
+= 4.2.0 =
+Added: Focum AchterafBetalen
+Fix: compatibility with WooCommerce 2.3.4
 
 = 3.5.4 =
 Fix: removed http link from checkout page

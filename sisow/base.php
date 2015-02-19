@@ -43,7 +43,7 @@ class SisowBase extends WC_Payment_Gateway {
 			$this->paymentfeelabel = '';
 		}
 		
-        $this->notify_url = add_query_arg('wc-api', 'WC_sisow_' . $this->paymentcode, home_url('/'));
+		$this->notify_url = add_query_arg( array('wc-api' => 'WC_sisow_' . $this->paymentcode, 'utm_nooverride' => '1'), home_url('/'));
 
         if ($this->paymentcode == 'overboeking' || $this->paymentcode == 'ebill') {
             $this->includelink = $this->settings['includelink'];
@@ -120,14 +120,18 @@ class SisowBase extends WC_Payment_Gateway {
             'description' => __("This is the description your customer will see on his bank statement ", 'woocommerce'),
             'default' => __("", 'woocommerce')
         );
-        $velden['testmode'] = array(
-            'title' => __('Testmode', 'woocommerce'),
-            'type' => 'checkbox',
-            'label' => __('Enable the testmode to test your connection', 'woocommerce'),
-            'description' => __('Test the connection between Sisow and your Webshop.', 'woocommerce'),
-            'default' => 'yes'
-        );
-
+		
+		if($this->paymentcode != 'focum')
+		{
+			$velden['testmode'] = array(
+				'title' => __('Testmode', 'woocommerce'),
+				'type' => 'checkbox',
+				'label' => __('Enable the testmode to test your connection', 'woocommerce'),
+				'description' => __('Test the connection between Sisow and your Webshop.', 'woocommerce'),
+				'default' => 'yes'
+			);
+		}
+		
         if ($this->paymentcode == 'ebill' || $this->paymentcode == 'overboeking') {
             $velden['days'] = array(
                 'title' => __('Days', 'woocommerce'),
@@ -224,8 +228,8 @@ class SisowBase extends WC_Payment_Gateway {
         if ($this->paymentcode == 'ideal') {
             $sisow->issuerId = $this->issuerid;
         }
-
-        if (($ex = $sisow->TransactionRequest($this->prep($order_id))) < 0) {
+				
+        if (($ex = $sisow->TransactionRequest($this->prep($order))) < 0) {
             if (($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc') && $sisow->errorMessage != '') {
                 $error = $sisow->errorMessage;
             } else {
@@ -233,6 +237,10 @@ class SisowBase extends WC_Payment_Gateway {
 				{
 					$error = 'Testen op uw Sisow account is niet toegestaan.<br>
 								Log in op www.sisow.nl en kies voor "Mijn Profiel" tabblad "Geavanceerd" en schakel de optie "testen met behulp van simulator" in.';
+				}
+				else if($ex == -4)
+				{
+					$error = 'Bedrag lager dan 45 cent.';
 				}
 				else
 				{
@@ -242,6 +250,8 @@ class SisowBase extends WC_Payment_Gateway {
 
             $woocommerce->add_error($error);
         } else {
+			update_post_meta($order->id, '_trxid', $sisow->trxId);
+			
             if ($this->redirect === false && $sisow->pendingKlarna) {
 
                 $order->update_status('on-hold', __($this->paymentname . ' waiting for Klarna', 'woocommerce'));
@@ -263,9 +273,7 @@ class SisowBase extends WC_Payment_Gateway {
         }
     }
 
-    private function prep($order_id) {
-        $order = new WC_Order($order_id);
-
+    private function prep($order) {
         $arg = array();
         $arg['ipaddress'] = filter_input(INPUT_SERVER, 'REMOTE_ADDR');//$_SERVER['REMOTE_ADDR'];
         $arg['shipping_firstname'] = $order->shipping_first_name;
@@ -303,6 +311,9 @@ class SisowBase extends WC_Payment_Gateway {
 
         if (isset($this->gender))
             $arg['gender'] = $this->gender;
+			
+		if (isset($this->iban))
+            $arg['iban'] = $this->iban;
 
         $arg['amount'] = round($order->order_total * 100.0, 0);
         $arg['tax'] = round(($order->order_tax + $order->order_shipping_tax) * 100.0, 0);
@@ -349,7 +360,7 @@ class SisowBase extends WC_Payment_Gateway {
                 $arg['product_taxrate_' . $item_loop] = round($tax, 2) * 100;
             }
         }
-		
+				
 		foreach($order->get_fees() as $fee)
 		{
 			if($fee['name'] == $this->paymentfeelabel)
@@ -382,7 +393,7 @@ class SisowBase extends WC_Payment_Gateway {
         if (isset($this->days) && $this->days > 0) {
             $arg['days'] = $this->days;
         }
-
+		
         return $arg;
     }
 
@@ -402,8 +413,13 @@ class SisowBase extends WC_Payment_Gateway {
         $order = new WC_Order($this->orderid);
         $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey'], $this->settings['shopid']);
 		
+		$trxid = get_post_meta($order->id, '_trxid', true);
+		
+		if(empty($trxid))
+			$trxid = $this->trxid;
+
         if (($order->status != 'processing' && $order->status != 'completed') || $sisow->status == Sisow::statusReversed || $sisow->status == Sisow::statusRefunded){
-            if (($ex = $sisow->StatusRequest($this->trxid)) < 0) {
+            if (($ex = $sisow->StatusRequest($trxid)) < 0) {
                 echo 'fail' . $ex;
                 exit;
             } else {
@@ -421,6 +437,9 @@ class SisowBase extends WC_Payment_Gateway {
                         break;
                     case 'Cancelled':
                         $order->add_order_note($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was cancelled.', 'woocommerce'));
+                        break;
+					case 'Denied':
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was denied by Klarna.', 'woocommerce'));
                         break;
                     case 'Expired':
                         $order->cancel_order($this->paymentname . __(': transaction was expired.', 'woocommerce'));
