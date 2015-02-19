@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stable tag: 4.2.0
+Stable tag: 4.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,6 +80,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 4.2.1 =
+* Fix: compatibility with WooCommerce 2.3.4
+
 = 4.2.0 =
 * Added: Focum AchterafBetalen
 * Fix: compatibility with WooCommerce 2.3.4
@@ -120,6 +123,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 4.2.1 =
+Fix: compatibility with WooCommerce 2.3.4
+
 = 4.2.0 =
 Added: Focum AchterafBetalen
 Fix: compatibility with WooCommerce 2.3.4

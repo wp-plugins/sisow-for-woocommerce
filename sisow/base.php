@@ -248,7 +248,7 @@ class SisowBase extends WC_Payment_Gateway {
 				}
             }
 
-            $woocommerce->add_error($error);
+			wc_add_notice( $error, 'error' );
         } else {
 			update_post_meta($order->id, '_trxid', $sisow->trxId);
 			
