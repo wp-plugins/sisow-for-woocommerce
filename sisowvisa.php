@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Visa
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Visa Plugin for WooCommerce
-Version: 4.2.1
+Version: 4.3.0
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -37,7 +37,7 @@ function woocommerce_visa_init()
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text .= '<img alt="visa" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/visa.jpg'.'" width="67" height="42" border="0" />';
+            $text .= '<p><img alt="visa" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/visa.jpg'.'" style="float:left"/></p>';
 			if ($paymentfee_total > 0) {
 				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 

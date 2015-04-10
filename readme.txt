@@ -4,8 +4,8 @@ Contributors: sisow
 Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
-Tested up to: 4.1
-Stable tag: 4.2.1
+Tested up to: 4.1.1
+Stable tag: 4.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,8 +20,10 @@ For now this plug-in contains the following payment methods:
 <ul>
 <li>CreditCard</li>
 <li>Ebill</li>
+<li>EPS</li>
 <li>Focum AchterafBetalen</li>
 <li>iDEAL</li>
+<li>Giropay</li>
 <li>Maestro</li>
 <li>Mastercard</li>
 <li>MisterCash</li>
@@ -70,9 +72,13 @@ A general error, please send the TA code to support@sisow.nl
 
 Enable the Test Mode in you Sisow Account under "Mijn Profiel" tab "Geavanceerd". Enable the first checkbox "Testen met behulp van simulator (toestaan)".
 
-= When I recieve an TA.... error =
+= When I receive an TA.... error =
 
 Send an e-mail to support@sisow.nl with the given TA code.
+
+= When your site uses WP-engine and you receive the message Incorrect URL! =
+
+Contact WP-engine, this is an cache setting at their side, the returnURL may not be cached.
 
 == Screenshots ==
 
@@ -80,6 +86,10 @@ Send an e-mail to support@sisow.nl with the given TA code.
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 4.3.0 =
+* Added: Giropay
+* Added: EPS
+
 = 4.2.1 =
 * Fix: compatibility with WooCommerce 2.3.4
 
@@ -123,6 +133,9 @@ Send an e-mail to support@sisow.nl with the given TA code.
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 4.3.0 =
+Added Giropay and EPS
+
 = 4.2.1 =
 Fix: compatibility with WooCommerce 2.3.4
 

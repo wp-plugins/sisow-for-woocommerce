@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 4.2.1
+  Version: 4.3.0
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -32,6 +32,8 @@ function woocommerce_ideal_init() {
             $testmode = ($this->testmode == 'yes') ? true : false;
             
             $sisow = new Sisow($this->settings['merchantid'], $this->settings['merchantkey']);
+			$options = '';
+			$sisow->DirectoryRequest($options, false, $testmode);
 			
 			$text = '';
 			if($this->merchantId == '' || $this->merchantKey == '')
@@ -39,26 +41,21 @@ function woocommerce_ideal_init() {
 			
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
-            
-            $text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" height="24" alt="Sisow iDEAL" />';
-
-            $testmode = ($this->testmode == 'yes') ? true : false;
-            
-            $text .= '&nbsp;&nbsp;Kies uw bank&nbsp;&nbsp;<select name="sisow_bank">';
-            $text .= '<option value="">Kies uw bank...</option>';
-            
-            $options = '';
-            
-			$sisow->DirectoryRequest($options, false, $testmode);
-
-            foreach ($options as $value => $bank) {
+            			
+			$text .= '<p>';
+			$text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" alt="Sisow iDEAL" style="float:left" />';
+			
+			if ($paymentfee_total > 0) {
+                $text .= '<br/><b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br></br>';
+            }
+			
+			$text .= 'Kies uw bank<br/>';
+			$text .= '<select name="sisow_bank">';
+			foreach ($options as $value => $bank) {
                 $text .= '<option value="' . $value . '">' . $bank . '</option>';
             }
-            $text .= '</select>';
-			
-			 if ($paymentfee_total > 0) {
-                $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
-            }
+			$text .= '</select>';
+			$text .= '</p>';
 			
             echo wpautop(wptexturize($text));
         }

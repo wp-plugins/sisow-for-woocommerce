@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow PayPal
 Plugin URI: http://www.sisow.nl
 Description: The Sisow PayPal Plugin for WooCommerce
-Version: 4.2.1
+Version: 4.3.0
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -38,7 +38,7 @@ function woocommerce_paypalec_init()
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/paypal.gif" alt="Sisow PayPal" />';
+            $text .= '<p><img src="https://www.sisow.nl/Sisow/images/ideal/paypal.gif" alt="Sisow PayPal" style="float:left" /></p>';
 			if ($paymentfee_total > 0) {
 				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 

@@ -394,6 +394,10 @@ class SisowBase extends WC_Payment_Gateway {
             $arg['days'] = $this->days;
         }
 		
+		if(isset($this->bic) && !empty($this->bic)){
+			$arg['bic'] = $this->bic;
+		}
+		
         return $arg;
     }
 

@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Maestro
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Maestro Plugin for WooCommerce
-Version: 4.2.1
+Version: 4.3.0
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -37,7 +37,7 @@ function woocommerce_maestro_init()
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text .= '<img alt="maestro" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/maestro.jpg'.'" width="67" height="42" border="0" />';
+            $text .= '<p><img alt="maestro" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/maestro.jpg'.'" border="0" style="float:left" /></p>';
 			if ($paymentfee_total > 0) {
 				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 
