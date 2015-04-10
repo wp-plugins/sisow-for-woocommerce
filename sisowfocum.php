@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Focum AchterafBetalen
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Focum AchterafBetalen Plugin for WooCommerce
-Version: 4.3.0
+Version: 4.3.1
 Author: Sisow
 Author URI: http://www.sisow.nl
 */

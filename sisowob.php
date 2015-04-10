@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow OverBoeking
 Plugin URI: http://www.sisow.nl
 Description: The Sisow OverBoeking Plugin for WooCommerce
-Version: 4.3.0
+Version: 4.3.1
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
