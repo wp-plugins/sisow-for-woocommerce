@@ -427,16 +427,19 @@ class SisowBase extends WC_Payment_Gateway {
                 echo 'fail' . $ex;
                 exit;
             } else {
+				if(($sisow->status == 'Pending' || $sisow->status == 'Open') && ($this->paymentcode != 'overboeking' && $this->paymentcode != 'ebill'))
+					exit('Order still pending');
+				
                 switch ($sisow->status) {
                     case 'Success':
                         $order->add_order_note(__($this->paymentname . ' transaction Success', 'woocommerce'));
                         $order->payment_complete();
 						
 						if(isset($this->_completed) && $this->_completed)
-							$order->update_status('completed', 'Sisow set status to Completed');
+							$order->update_status('completed', 'Transaction ' . $_GET['trxid'] . ':Sisow set status to Completed');
                         break;
                     case 'Reservation':
-                        $order->add_order_note(__('Reservation made for ' . $this->paymentname, 'woocommerce'));
+                        $order->add_order_note(__('Transaction ' . $_GET['trxid'] . ': Reservation made for ' . $this->paymentname, 'woocommerce'));
                         $order->payment_complete();
                         break;
                     case 'Cancelled':
@@ -446,16 +449,16 @@ class SisowBase extends WC_Payment_Gateway {
                         $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was denied by Klarna.', 'woocommerce'));
                         break;
                     case 'Expired':
-                        $order->cancel_order($this->paymentname . __(': transaction was expired.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was expired.', 'woocommerce'));
                         break;
                     case 'Failure':
-                        $order->cancel_order($this->paymentname . __(': transaction was failed.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was failed.', 'woocommerce'));
                         break;
 					case Sisow::statusRefunded:
-                        $order->cancel_order($this->paymentname . __(': transaction was '.Sisow::statusRefunded.'.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusRefunded.'.', 'woocommerce'));
                         break;
 					case Sisow::statusReversed:
-                        $order->cancel_order($this->paymentname . __(': transaction was '.Sisow::statusReversed.'.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusReversed.'.', 'woocommerce'));
                         break;
                     case 'Pending':
                         $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce'));

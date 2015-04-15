@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
 Tested up to: 4.1.1
-Stable tag: 4.3.1
+Stable tag: 4.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -21,7 +21,7 @@ For now this plug-in contains the following payment methods:
 <li>CreditCard</li>
 <li>Ebill</li>
 <li>EPS</li>
-<li>Focum AchterafBetalen</li>
+<li>Focum Achteraf Betalen</li>
 <li>iDEAL</li>
 <li>Giropay</li>
 <li>Maestro</li>
@@ -86,6 +86,9 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 4.3.2 =
+* Fix: Order do not get status pending/open when the paymentmethod is not Ebill or Bankwire/Overboeking
+
 = 4.3.0 =
 * Added: Giropay
 * Added: EPS
@@ -133,6 +136,9 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 4.3.2 =
+Fix: Order do not get status pending/open when the paymentmethod is not Ebill or Bankwire/Overboeking
+
 = 4.3.0 =
 Added Giropay and EPS
 
