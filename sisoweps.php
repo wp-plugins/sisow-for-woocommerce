@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow EPS
   Plugin URI: http://www.sisow.nl
   Description: The Sisow EPS Plugin for WooCommerce
-  Version: 4.3.2
+  Version: 4.3.3
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -30,6 +30,11 @@ function woocommerce_eps_init() {
 			
             parent::__construct();
         }
+		
+		public function get_icon()
+		{
+			return '<img src="https://www.girosolution.de/fileadmin/Downloads/Logos/eps_logo.png" />';
+		}
 
         public function payment_fields() {
             $paymentfee_total = $this->getFee();
@@ -42,20 +47,19 @@ function woocommerce_eps_init() {
 	$(\'#eps_widget\').eps_widget({\'return\': \'bic\'});
 });
     } ) ( jQuery );</script>';
-	
+			
+			$text .= '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
-            
-            $text .= '<p><img src="https://www.girosolution.de/fileadmin/Downloads/Logos/eps_logo.png" width="60px" style="float:left" /><br/>';
-			
+				$text .= '</br><b>Let op Testmodus ingeschakeld!</b>';
+            			
 			if ($paymentfee_total > 0) {
-                $text .= '<b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br></br>';
+                $text .= '</br><b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b>';
             }
 			
-			$text .= 'Bankleitzahl<br/>';
+			$text .= '<br/>Bankleitzahl<br/>';
 			$text .= '<input id="eps_widget" autocomplete="off" name="sisow_eps_bic" class="input-text required-entry" />';
 			$text .= '</p>';
 

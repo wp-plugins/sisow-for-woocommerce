@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow iDEAL
   Plugin URI: http://www.sisow.nl
   Description: The Sisow iDEAL Plugin for WooCommerce
-  Version: 4.3.2
+  Version: 4.3.3
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -26,6 +26,10 @@ function woocommerce_ideal_init() {
             $this->redirect = true;
             parent::__construct();
         }
+		
+		public function get_icon(){
+			return '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" alt="Sisow iDEAL" >';
+		}
 
         public function payment_fields() {
             $paymentfee_total = $this->getFee();
@@ -35,27 +39,25 @@ function woocommerce_ideal_init() {
 			$options = '';
 			$sisow->DirectoryRequest($options, false, $testmode);
 			
-			$text = '';
+			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '<br/><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
+				$text .= '<br/><b>Let op Testmodus ingeschakeld!</b>';
             			
-			$text .= '<p>';
-			$text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/idealklein.gif" alt="Sisow iDEAL" style="float:left" />';
-			
-			if ($paymentfee_total > 0) {
-                $text .= '<br/><b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br></br>';
-            }
-			
-			$text .= 'Kies uw bank<br/>';
+				
+			$text .= '<p>Kies hieronder uw bank<br/>';
 			$text .= '<select name="sisow_bank">';
+			$text .= '<option value="">Kies uw bank...</option>';
 			foreach ($options as $value => $bank) {
                 $text .= '<option value="' . $value . '">' . $bank . '</option>';
             }
-			$text .= '</select>';
-			$text .= '</p>';
+			$text .= '</select></p>';
+			
+			if ($paymentfee_total > 0) {
+                $text .= '<br/><b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b>';
+            }
 			
             echo wpautop(wptexturize($text));
         }

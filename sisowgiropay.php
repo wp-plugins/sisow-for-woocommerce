@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow Giropay
   Plugin URI: http://www.sisow.nl
   Description: The Sisow Giropay Plugin for WooCommerce
-  Version: 4.3.2
+  Version: 4.3.3
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
@@ -30,6 +30,11 @@ function woocommerce_giropay_init() {
 			
             parent::__construct();
         }
+		
+		public function get_icon()
+		{
+			return '<img src="https://www.girosolution.de/fileadmin/Downloads/Logos/giropay_200px_color_rgb.png" />';
+		}
 
         public function payment_fields() {
             $paymentfee_total = $this->getFee();
@@ -42,22 +47,20 @@ function woocommerce_giropay_init() {
 	$(\'#giropay_widget\').giropay_widget({\'return\': \'bic\',\'kind\': 1});
 });
     } ) ( jQuery );</script>';
-	
+			
+			$text .= '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
+				$text .= '</br><b>Let op Testmodus ingeschakeld!</b>';
             
-            $text .= '<p><img src="https://www.girosolution.de/fileadmin/Downloads/Logos/giropay_200px_color_rgb.png" width="60px" style="float:left" /><br/>';
+			$text .= '<br/>Bankleitzahl<br/>';
+			$text .= '<input id="giropay_widget" autocomplete="off" name="sisow_giropay_bic" class="input-text required-entry" />';
 			
 			if ($paymentfee_total > 0) {
-                $text .= '<b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br></br>';
+                $text .= '</br><b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b>';
             }
-			
-			$text .= 'Bankleitzahl<br/>';
-			$text .= '<input id="giropay_widget" autocomplete="off" name="sisow_giropay_bic" class="input-text required-entry" />';
-			$text .= '</p>';
 
             echo $text;//wpautop(wptexturize($text));
         }

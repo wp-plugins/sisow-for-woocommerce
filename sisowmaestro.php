@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Maestro
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Maestro Plugin for WooCommerce
-Version: 4.3.2
+Version: 4.3.3
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -27,22 +27,26 @@ function woocommerce_maestro_init()
 			parent::__construct();
 		}
 		
+		public function get_icon()
+		{
+			return '<img alt="maestro" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/maestro.jpg'.'"';
+		}
+		
 		public function payment_fields() {
 			$paymentfee_total = $this->getFee();
 			
-			$text = '';
+			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '<br/><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
+				$text .= '<br/><b>Let op Testmodus ingeschakeld!</b>';
             
-            $text .= '<p><img alt="maestro" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/maestro.jpg'.'" border="0" style="float:left" /></p>';
 			if ($paymentfee_total > 0) {
-				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
+				$text .= '</br><b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 
 				
-			echo wpautop(wptexturize($text));
+			echo $text;
 		}
 	}
 	

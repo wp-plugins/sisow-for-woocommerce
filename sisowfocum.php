@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Focum AchterafBetalen
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Focum AchterafBetalen Plugin for WooCommerce
-Version: 4.3.2
+Version: 4.3.3
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -28,35 +28,37 @@ function woocommerce_sisowfocum_init()
 			parent::__construct();
 		}
 		
+		public function get_icon(){
+			return '<img src="https://www.achterafbetalen.nl/files/logo.png" alt="AchterafBetalen"</img>';
+		}
+		
 		public function payment_fields() {
 			global $woocommerce;
 					
 			$paymentfee_total = $this->getFee();
 			
-			$text = '';
+			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
-            
-			$text .= '<img src="https://www.achterafbetalen.nl/files/logo.png" alt="AchterafBetalen" width="125px"</img><br/><br/>';
-			
-			$text .= '<label for="'.$this->paymentcode.'_gender">Geslacht:&nbsp;</label>';
-			$text .= '<select name="'.$this->paymentcode.'_gender" id="'.$this->paymentcode.'_gender">';
+				$text .= '</br><b>Let op Testmodus ingeschakeld!</b>';
+            			
+			$text .= '</br><label for="'.$this->paymentcode.'_gender">Geslacht:&nbsp;</label>';
+			$text .= '</br><select name="'.$this->paymentcode.'_gender" id="'.$this->paymentcode.'_gender">';
 			$text .= '<option value="">Maak uw keuze..</option>';
 			$text .= '<option value="M">Man</option>';
 			$text .= '<option value="F">Vrouw</option>';
 			$text .= '</select></br></br>';
 			
 			$text .= '<label for="'.$this->paymentcode.'_iban">IBAN:&nbsp;</label>';
-			$text .= '<input class="input-text" type="text" name="'.$this->paymentcode.'_iban" id="'.$this->paymentcode.'_iban"/></br></br>';
+			$text .= '</br><input class="input-text" type="text" name="'.$this->paymentcode.'_iban" id="'.$this->paymentcode.'_iban"/></br></br>';
 			
 			$text .= '<label for="'.$this->paymentcode.'_phone">Telefoon:&nbsp;</label>';
-			$text .= '<input class="input-text" type="text" name="'.$this->paymentcode.'_phone" id="'.$this->paymentcode.'_phone"/></br></br>';
+			$text .= '</br><input class="input-text" type="text" name="'.$this->paymentcode.'_phone" id="'.$this->paymentcode.'_phone"/></br></br>';
 			
-			$text .= "Geboortedatum:&nbsp;";
-			$text .= '<select name="'.$this->paymentcode.'_day" id="'.$this->paymentcode.'_day">';
+			$text .= "<b>&nbsp;&nbsp;Geboortedatum:</b>";
+			$text .= '</br><select name="'.$this->paymentcode.'_day" id="'.$this->paymentcode.'_day">';
 			$text .= '<option value="">Dag</option>';
 			for($i=1;$i<32;$i++)
 				$text .= '<option value="'.sprintf('%02d', $i).'">'.sprintf('%02d', $i).'</option>';
@@ -85,7 +87,7 @@ function woocommerce_sisowfocum_init()
 			$text .= '</select></br>';
 									
 			if ($paymentfee_total > 0) {
-				$text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
+				$text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b></br>';
 			}
 			
 			echo wpautop(wptexturize($text));

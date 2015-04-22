@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow ebill
 Plugin URI: http://www.sisow.nl
 Description: The Sisow ebill Plugin for WooCommerce
-Version: 4.3.2
+Version: 4.3.3
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -32,19 +32,19 @@ function woocommerce_ebill_init()
 			global $woocommerce;
 			$paymentfee_total = $this->getFee();
 			
-			$text = '';
+			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
-				$text .= '<b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b></br>';
+				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
 			if($this->testmode == 'yes')
-				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
+				$text .= '</br><b>Let op Testmodus ingeschakeld!</b>';
             
-            $text .=  'U heeft ervoor gekozen om uw bestelling per digitale acceptgiro over te maken.
+            $text .=  '</br>U heeft ervoor gekozen om uw bestelling per digitale acceptgiro over te maken.
 				De verwerking hiervan is uitbesteed aan Sisow B.V.<br/>
 				U ontvangt een e-mail met daarin informatie hoe u uw betaling kunt voltooien.';
 				
 			if ($paymentfee_total > 0) {
-                $text .= '&nbsp;&nbsp;<b>' . $this->paymentfeelabel. ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
+                $text .= '</br><b>' . $this->paymentfeelabel . woocommerce_price($paymentfee_total) . '</b></br>';
             }
 			
 			echo wpautop( wptexturize($text));
