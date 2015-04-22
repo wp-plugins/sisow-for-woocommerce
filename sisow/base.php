@@ -26,6 +26,7 @@ class SisowBase extends WC_Payment_Gateway {
 		$this->klarnaId = (isset($this->settings['klarnaid'])) ? $this->settings['klarnaid'] : '';
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
+		$this->displaylogo = (isset($this->settings['displaylogo'])) ? $this->settings['displaylogo'] : "yes";
 		
 		if(isset($this->settings['completed']))
 			$this->_completed = $this->settings['completed'] == "yes" ? true : false;
@@ -85,6 +86,14 @@ class SisowBase extends WC_Payment_Gateway {
             'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
             'default' => __($this->paymentname, 'woocommerce')
         );
+		
+		$velden['displaylogo'] = array(
+            'title' => __('Display logo', 'woocommerce'),
+            'type' => 'checkbox',
+            'label' => __('Display logo on checkout page', 'woocommerce'),
+            'default' => 'yes'
+        );
+		
         $velden['merchantid'] = array(
             'title' => __('Sisow Merchant ID', 'woocommerce'),
             'type' => 'text',

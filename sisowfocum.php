@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Focum AchterafBetalen
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Focum AchterafBetalen Plugin for WooCommerce
-Version: 4.3.3
+Version: 4.3.4
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -29,7 +29,8 @@ function woocommerce_sisowfocum_init()
 		}
 		
 		public function get_icon(){
-			return '<img src="https://www.achterafbetalen.nl/files/logo.png" alt="AchterafBetalen"</img>';
+			if($this->displaylogo == 'yes')
+				return '<img src="https://www.achterafbetalen.nl/files/logo.png" alt="AchterafBetalen"</img>';
 		}
 		
 		public function payment_fields() {

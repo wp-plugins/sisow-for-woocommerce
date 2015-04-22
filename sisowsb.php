@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow SofortBanking
 Plugin URI: http://www.sisow.nl
 Description: The Sisow SofortBanking Plugin for WooCommerce
-Version: 4.3.3
+Version: 4.3.4
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -28,7 +28,8 @@ function woocommerce_sofort_init()
 		}
 		
 		public function get_icon(){
-			return '<img src="https://www.sisow.nl/Sisow/images/ideal/payment_small.png" alt="Sisow SofortBanking"';
+			if($this->displaylogo == 'yes')
+				return '<img src="https://www.sisow.nl/Sisow/images/ideal/payment_small.png" alt="Sisow SofortBanking"';
 		}
 		
 		public function payment_fields() {
