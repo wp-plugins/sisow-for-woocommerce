@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Webshop Giftcard
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Webshop Giftcard Plugin for WooCommerce
-Version: 4.3.4
+Version: 4.3.5
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -27,6 +27,11 @@ function woocommerce_webshop_init()
 			parent::__construct();
 		}
 		
+		public function get_icon(){
+			if($this->displaylogo == 'yes')
+				return '<img alt="'.$this->paymentname.'" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/'.$this->paymentcode.'.png'.'"';
+		}
+		
 		public function payment_fields() {
 			$paymentfee_total = $this->getFee();
 			
@@ -37,7 +42,6 @@ function woocommerce_webshop_init()
 			if($this->testmode == 'yes')
 				$text .= '<b>Let op Testmodus ingeschakeld!</b></br>';
             
-            $text .= '<img src="https://www.sisow.nl/Sisow/images/ideal/logowsgc.gif" alt="Sisow Webshop Giftcard" />';
 			if ($paymentfee_total > 0) {
 				$text .= '</br></br>&nbsp;&nbsp;<b>' . $this->paymentfeelabel . ': ' . woocommerce_price($paymentfee_total) . '</b></br>';
 			} 

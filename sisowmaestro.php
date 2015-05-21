@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Maestro
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Maestro Plugin for WooCommerce
-Version: 4.3.4
+Version: 4.3.5
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
@@ -30,7 +30,7 @@ function woocommerce_maestro_init()
 		public function get_icon()
 		{
 			if($this->displaylogo == 'yes')
-				return '<img alt="maestro" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/maestro.jpg'.'"';
+				return '<img alt="'.$this->paymentname.'" title="" src="'.plugins_url() . "/" . plugin_basename( dirname(__FILE__)) . '/sisow/logo/'.$this->paymentcode.'.png'.'"';
 		}
 		
 		public function payment_fields() {

@@ -101,7 +101,7 @@ class Sisow
 			CURLOPT_RETURNTRANSFER => $return,
 			CURLOPT_FORBID_REUSE => 1,
 			CURLOPT_TIMEOUT => 120,
-			CURLOPT_SSL_VERIFYPEER => 0,
+			CURLOPT_SSL_VERIFYPEER => 1,
 			CURLOPT_POSTFIELDS => $keyvalue == NULL ? "" : http_build_query($keyvalue, '', '&'));
 		$ch = curl_init();
 		curl_setopt_array($ch, $options);
