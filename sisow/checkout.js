@@ -3,3 +3,4 @@ jQuery(document).ready(function() {
         jQuery('body').trigger('update_checkout');
     });
 });
+

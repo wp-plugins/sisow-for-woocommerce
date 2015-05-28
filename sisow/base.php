@@ -371,23 +371,16 @@ class SisowBase extends WC_Payment_Gateway {
         }
 				
 		foreach($order->get_fees() as $fee)
-		{
-			if($fee['name'] == $this->paymentfeelabel)
-			{
-				$tax = new WC_Tax();
-				$tax_rates = $tax->get_rates();
-				$taxes = $tax->calc_tax( $fee['item_meta']['_line_total']['0'], $tax_rates );
-				
-				$item_loop++;
-                $arg['product_id_' . $item_loop] = 'paymentfee';
-                $arg['product_description_' . $item_loop] = $fee['name'];
-                $arg['product_quantity_' . $item_loop] = '1';
-                $arg['product_netprice_' . $item_loop] = round($fee['item_meta']['_line_total']['0'], 2) * 100;
-                $arg['product_total_' . $item_loop] = round($fee['item_meta']['_line_total']['0'] + $taxes['1'], 2) * 100;
-                $arg['product_nettotal_' . $item_loop] = round($fee['item_meta']['_line_total']['0'], 2) * 100;
-                $arg['product_tax_' . $item_loop] = round($taxes['1'], 2) * 100;
-                $arg['product_taxrate_' . $item_loop] = round($tax_rates["1"]["rate"], 2) * 100;
-			}
+		{			
+			$item_loop++;
+			$arg['product_id_' . $item_loop] = 'fee' . $item_loop;
+			$arg['product_description_' . $item_loop] = $fee['name'];
+			$arg['product_quantity_' . $item_loop] = '1';
+			$arg['product_netprice_' . $item_loop] = round($fee['line_total'], 2) * 100;
+			$arg['product_total_' . $item_loop] = round($fee['line_total'] + $fee['line_tax'], 2) * 100;
+			$arg['product_nettotal_' . $item_loop] = round($fee['line_total'], 2) * 100;
+			$arg['product_tax_' . $item_loop] = round($fee['line_tax'], 2) * 100;
+			$arg['product_taxrate_' . $item_loop] = round((($arg['product_tax_' . $item_loop] * 100.0) / $arg['product_nettotal_' . $item_loop])) * 100;
 		}
 
         if ($this->settings['testmode'] == 'yes') {
@@ -615,8 +608,8 @@ function sisow_payment_fee($cart) {
 
             if (function_exists('get_product')) {
                 $cart->fee_total = $cart->fee_total + $paymentFee;
-            }
-
+			}
+			
             if (!function_exists('get_product')) {
                 $cart->cart_contents_total = $cart->cart_contents_total + $paymentFee;
             }

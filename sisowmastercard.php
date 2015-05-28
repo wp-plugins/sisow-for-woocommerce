@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow Mastercard
 Plugin URI: http://www.sisow.nl
 Description: The Sisow Mastercard Plugin for WooCommerce
-Version: 4.3.5
+Version: 4.3.6
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
