@@ -247,6 +247,10 @@ class SisowBase extends WC_Payment_Gateway {
 					$error = 'Testen op uw Sisow account is niet toegestaan.<br>
 								Log in op www.sisow.nl en kies voor "Mijn Profiel" tabblad "Geavanceerd" en schakel de optie "testen met behulp van simulator" in.';
 				}
+				else if($sisow->errorCode == 'IBAN')
+				{
+					$error = 'Het opgegeven IBAN is onjuist';
+				}
 				else if($ex == -4)
 				{
 					$error = 'Bedrag lager dan 45 cent.';

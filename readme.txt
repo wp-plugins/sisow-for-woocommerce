@@ -5,7 +5,7 @@ Donate link: http://www.sisow.nl
 Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
 Requires at least: 3.0.1
 Tested up to: 4.2.2
-Stable tag: 4.3.6
+Stable tag: 4.3.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 2. The configuration in WooCommerce
 
 == Changelog ==
+= 4.3.7 =
+* Getissuer Fix
+* Better Focum validation
+
 = 4.3.6 =
 * Supports other payment fee plug-ins
 
@@ -148,6 +152,10 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 * Addes Sisow PayPal
 
 == Upgrade Notice ==
+= 4.3.7 =
+Getissuer Fix
+Better Focum validation
+
 = 4.3.6 =
 Supports other payment fee plug-ins
 

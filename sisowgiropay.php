@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow Giropay
   Plugin URI: http://www.sisow.nl
   Description: The Sisow Giropay Plugin for WooCommerce
-  Version: 4.3.6
+  Version: 4.3.7
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
