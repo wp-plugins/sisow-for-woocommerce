@@ -587,7 +587,7 @@ class Sisow
 			$this->errorMessage = "iban empty";
 			return false;
 		}
-		else if($this->amount < 100)
+		else if(($this->amount * 100.0) < 100)
 		{
 			$this->errorCode = "amount";
 			$this->errorMessage = "incorrect amount";

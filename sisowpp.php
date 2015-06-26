@@ -3,7 +3,7 @@
 Plugin Name: WooCommerce Sisow PayPal
 Plugin URI: http://www.sisow.nl
 Description: The Sisow PayPal Plugin for WooCommerce
-Version: 4.3.7
+Version: 4.3.8
 Author: Sisow
 Author URI: http://www.sisow.nl
 */
