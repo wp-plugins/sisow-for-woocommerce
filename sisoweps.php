@@ -49,7 +49,7 @@ function woocommerce_eps_init() {
 });
     } ) ( jQuery );</script>';
 			
-			$text .= '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
+			$text .= '<b>'.__('Betalen met', 'sisow') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
 				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
@@ -73,7 +73,7 @@ function woocommerce_eps_init() {
             $this->bic = $_POST["sisow_eps_bic"];
 
             if (!$this->bic) {
-				wc_add_notice( __( 'Please enter your bankleitzahl.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Please enter your bankleitzahl.', 'sisow' ), 'error' );
                 return false;
             } else {
                 return true;

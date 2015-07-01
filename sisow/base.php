@@ -9,7 +9,7 @@ class SisowBase extends WC_Payment_Gateway {
         global $woocommerce;
 
         $this->id = 'sisow' . $this->paymentcode;
-        $this->method_title = __($this->paymentname, 'woothemes');
+        $this->method_title = __($this->paymentname, 'sisow');
         $this->has_fields = true;
 
         // Load the form fields
@@ -27,6 +27,7 @@ class SisowBase extends WC_Payment_Gateway {
         $this->omschrijving = $this->settings['omschrijving'];
         $this->testmode = $this->settings['testmode'];
 		$this->displaylogo = (isset($this->settings['displaylogo'])) ? $this->settings['displaylogo'] : "yes";
+		$this->description = (isset($this->settings['description'])) ? $this->settings['description'] : "yes";
 		
 		if(isset($this->settings['completed']))
 			$this->_completed = $this->settings['completed'] == "yes" ? true : false;
@@ -74,117 +75,124 @@ class SisowBase extends WC_Payment_Gateway {
         $velden = array();
 
         $velden['enabled'] = array(
-            'title' => __('Enable/Disable', 'woocommerce'),
+            'title' => __('Enable/Disable', 'sisow'),
             'type' => 'checkbox',
-            'label' => __('Enable ' . $this->paymentname, 'woocommerce'),
+            'label' => __('Enable ' . $this->paymentname, 'sisow'),
             'default' => 'yes'
         );
 
         $velden['title'] = array(
-            'title' => __('Title', 'woocommerce'),
+            'title' => __('Title', 'sisow'),
             'type' => 'text',
-            'description' => __('This controls the title which the user sees during checkout.', 'woocommerce'),
-            'default' => __($this->paymentname, 'woocommerce')
+            'description' => __('This controls the title which the user sees during checkout.', 'sisow'),
+            'default' => __($this->paymentname, 'sisow')
         );
 		
+		$velden['description'] = array(
+            'title' => __('Description', 'sisow'),
+            'type' => 'text',
+            'description' => __('The description which the user sees during checkout.', 'sisow'),
+            'default' => __($this->paymentname, 'sisow')
+        );		
+		
 		$velden['displaylogo'] = array(
-            'title' => __('Display logo', 'woocommerce'),
+            'title' => __('Display logo', 'sisow'),
             'type' => 'checkbox',
-            'label' => __('Display logo on checkout page', 'woocommerce'),
+            'label' => __('Display logo on checkout page', 'sisow'),
             'default' => 'yes'
         );
 		
         $velden['merchantid'] = array(
-            'title' => __('Sisow Merchant ID', 'woocommerce'),
+            'title' => __('Sisow Merchant ID', 'sisow'),
             'type' => 'text',
-            'description' => __('This is your Merchant ID which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
-            'default' => __("", 'woocommerce')
+            'description' => __('This is your Merchant ID which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'sisow'),
+            'default' => __("", 'sisow')
         );
         $velden['merchantkey'] = array(
-            'title' => __('Sisow Merchant Key', 'woocommerce'),
+            'title' => __('Sisow Merchant Key', 'sisow'),
             'type' => 'text',
-            'description' => __('This is your Merchant Key which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
-            'default' => __("", 'woocommerce')
+            'description' => __('This is your Merchant Key which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'sisow'),
+            'default' => __("", 'sisow')
         );
 		
 		$velden['shopid'] = array(
-            'title' => __('Sisow ShopId', 'woocommerce'),
+            'title' => __('Sisow ShopId', 'sisow'),
             'type' => 'text',
-            'description' => __('This is your Shop Id which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'woocommerce'),
-            'default' => __("", 'woocommerce')
+            'description' => __('This is your Shop Id which you can find in your Sisow profile on <a href="http://www.sisow.nl/">www.sisow.nl</a>.', 'sisow'),
+            'default' => __("", 'sisow')
         );
 
         if ($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc') {
             $velden['klarnaid'] = array(
-                'title' => __('Klarna ID', 'woocommerce'),
+                'title' => __('Klarna ID', 'sisow'),
                 'type' => 'text',
-                'description' => __('This is your Klarna ID, you get this ID from Klarna.', 'woocommerce'),
-                'default' => __("", 'woocommerce')
+                'description' => __('This is your Klarna ID, you get this ID from Klarna.', 'sisow'),
+                'default' => __("", 'sisow')
             );
         }
 
         $velden['omschrijving'] = array(
-            'title' => __('Description', 'woocommerce'),
+            'title' => __('Description', 'sisow'),
             'type' => 'text',
-            'description' => __("This is the description your customer will see on his bank statement ", 'woocommerce'),
-            'default' => __("", 'woocommerce')
+            'description' => __("This is the description your customer will see on his bank statement ", 'sisow'),
+            'default' => __("", 'sisow')
         );
 		
 		if($this->paymentcode != 'focum')
 		{
 			$velden['testmode'] = array(
-				'title' => __('Testmode', 'woocommerce'),
+				'title' => __('Testmode', 'sisow'),
 				'type' => 'checkbox',
-				'label' => __('Enable the testmode to test your connection', 'woocommerce'),
-				'description' => __('Test the connection between Sisow and your Webshop.', 'woocommerce'),
+				'label' => __('Enable the testmode to test your connection', 'sisow'),
+				'description' => __('Test the connection between Sisow and your Webshop.', 'sisow'),
 				'default' => 'yes'
 			);
 		}
 		
         if ($this->paymentcode == 'ebill' || $this->paymentcode == 'overboeking') {
             $velden['days'] = array(
-                'title' => __('Days', 'woocommerce'),
+                'title' => __('Days', 'sisow'),
                 'type' => 'text',
-                'description' => __("Number of days payment is valid.", 'woocommerce'),
-                'default' => __("", 'woocommerce')
+                'description' => __("Number of days payment is valid.", 'sisow'),
+                'default' => __("", 'sisow')
             );
 
             $velden['includelink'] = array(
-                'title' => __('Include bank info', 'woocommerce'),
+                'title' => __('Include bank info', 'sisow'),
                 'type' => 'checkbox',
-                'label' => ($this->paymentcode == 'ebill') ? __('Add Sisow bank account information, the customer can also pay through a bank transfer.', 'woocommerce') : __('Add an iDEAL link in the mail, the customer can also pay with iDEAL.', 'woocommerce'),
+                'label' => ($this->paymentcode == 'ebill') ? __('Add Sisow bank account information, the customer can also pay through a bank transfer.', 'sisow') : __('Add an iDEAL link in the mail, the customer can also pay with iDEAL.', 'sisow'),
                 'default' => 'yes'
             );
         }
 		
 		$velden['completed'] = array(
-            'title' => __('Completed', 'woocommerce'),
+            'title' => __('Completed', 'sisow'),
             'type' => 'checkbox',
-            'label' => __('Orderstatus Completed', 'woocommerce'),
-            'description' => __('If enabled set the order to completed, disabled the order will be processing.', 'woocommerce'),
+            'label' => __('Orderstatus Completed', 'sisow'),
+            'description' => __('If enabled set the order to completed, disabled the order will be processing.', 'sisow'),
             'default' => 'no'
         );
 		
 		if($this->paymentcode != 'klarnaacc')
 		{
 			$velden['paymentfeelabel'] = array(
-				'title' => __('Payment fee label:', 'woocommerce'),
+				'title' => __('Payment fee label:', 'sisow'),
 				'type' => 'text',
-				'description' => __('Set the order total text for the payment fee', 'woocommerce'),
-				'default' => __("", 'woocommerce')
+				'description' => __('Set the order total text for the payment fee', 'sisow'),
+				'default' => __("", 'sisow')
 			);
 			
 			$desc = ($this->paymentcode != 'klarna') ? 'Set the payment fee amount (negative amount is %)' : 'Set the payment fee amount.';
 			$velden['paymentfee'] = array(
-				'title' => __('Payment fee:', 'woocommerce'),
+				'title' => __('Payment fee:', 'sisow'),
 				'type' => 'text',
-				'description' => __($desc, 'woocommerce'),
-				'default' => __("", 'woocommerce')
+				'description' => __($desc, 'sisow'),
+				'default' => __("", 'sisow')
 			);
 
 			$classes = array_filter(array_map('trim', explode("\n", get_option('woocommerce_tax_classes'))));
 			$classes_options = array();
-			$classes_options[''] = __('Standard', 'woocommerce');
+			$classes_options[''] = __('Standard', 'sisow');
 			if ($classes) {
 				foreach ($classes as $class) :
 					$classes_options[sanitize_title($class)] = $class;
@@ -192,11 +200,11 @@ class SisowBase extends WC_Payment_Gateway {
 			}
 
 			$velden['paymentfeetax'] = array(
-				'title' => __('Payment fee:', 'woocommerce'),
+				'title' => __('Payment fee:', 'sisow'),
 				'type' => 'select',
 				'options' => $classes_options,
-				'description' => __('Tax class for the payment fee.', 'woocommerce'),
-				'default' => __("", 'woocommerce')
+				'description' => __('Tax class for the payment fee.', 'sisow'),
+				'default' => __("", 'sisow')
 			);
 		}
 
@@ -241,7 +249,15 @@ class SisowBase extends WC_Payment_Gateway {
         if (($ex = $sisow->TransactionRequest($this->prep($order))) < 0) {
             if (($this->paymentcode == 'klarna' || $this->paymentcode == 'klarnaacc') && $sisow->errorMessage != '') {
                 $error = $sisow->errorMessage;
-            } else {
+            } 
+			else if($this->paymentcode == 'focum')
+			{
+				if($sisow->errorCode == 'IBAN')
+					$error = 'Het opgegeven IBAN is onjuist';
+				else
+					$error = "Betalen met Achteraf Betalen is op dit moment niet mogelijk, betaal anders.";
+			}
+			else {
 				if($sisow->errorCode == 'TA3410')
 				{
 					$error = 'Testen op uw Sisow account is niet toegestaan.<br>
@@ -257,7 +273,7 @@ class SisowBase extends WC_Payment_Gateway {
 				}
 				else
 				{
-					$error = __('Betalen met ' . $this->paymentname . ' is nu niet mogelijk (' . $ex . ';' . $sisow->errorCode . '). Kies een andere betaalmethode.', 'woothemes');
+					$error = __('Betalen met ' . $this->paymentname . ' is nu niet mogelijk (' . $ex . ';' . $sisow->errorCode . '). Kies een andere betaalmethode.', 'sisow');
 				}
             }
 
@@ -267,7 +283,7 @@ class SisowBase extends WC_Payment_Gateway {
 			
             if ($this->redirect === false && $sisow->pendingKlarna) {
 
-                $order->update_status('on-hold', __($this->paymentname . ' waiting for Klarna', 'woocommerce'));
+                $order->update_status('on-hold', __($this->paymentname . ' waiting for Klarna', 'sisow'));
                 //$woocommerce->add_error(__('Voor uw betaling met Klarna is een extra controle nodig. U ontvangt binnen 24 uur bericht.', 'woothemes'));
 
                 return array(
@@ -438,39 +454,39 @@ class SisowBase extends WC_Payment_Gateway {
 				
                 switch ($sisow->status) {
                     case 'Success':
-                        $order->add_order_note(__($this->paymentname . ' transaction Success', 'woocommerce'));
+                        $order->add_order_note(__($this->paymentname . ' transaction Success', 'sisow'));
                         $order->payment_complete();
 						
 						if(isset($this->_completed) && $this->_completed)
 							$order->update_status('completed', 'Transaction ' . $_GET['trxid'] . ':Sisow set status to Completed');
                         break;
                     case 'Reservation':
-                        $order->add_order_note(__('Transaction ' . $_GET['trxid'] . ': Reservation made for ' . $this->paymentname, 'woocommerce'));
+                        $order->add_order_note(__('Transaction ' . $_GET['trxid'] . ': Reservation made for ' . $this->paymentname, 'sisow'));
                         $order->payment_complete();
                         break;
                     case 'Cancelled':
-                        $order->add_order_note($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was cancelled.', 'woocommerce'));
+                        $order->add_order_note($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was cancelled.', 'sisow'));
                         break;
 					case 'Denied':
-                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was denied by Klarna.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was denied by Klarna.', 'sisow'));
                         break;
                     case 'Expired':
-                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was expired.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was expired.', 'sisow'));
                         break;
                     case 'Failure':
-                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was failed.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was failed.', 'sisow'));
                         break;
 					case Sisow::statusRefunded:
-                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusRefunded.'.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusRefunded.'.', 'sisow'));
                         break;
 					case Sisow::statusReversed:
-                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusReversed.'.', 'woocommerce'));
+                        $order->cancel_order($this->paymentname . __(': transaction(' . $_GET['trxid'] . ') was '.Sisow::statusReversed.'.', 'sisow'));
                         break;
                     case 'Pending':
-                        $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce'));
+                        $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'sisow'));
                         break;
                     case 'Open':
-                        $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'woocommerce'));
+                        $order->update_status('on-hold', __($this->paymentname . ': transaction Pending', 'sisow'));
                         break;
                 }
                 add_post_meta($this->orderid, 'status', $sisow->status);

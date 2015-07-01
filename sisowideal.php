@@ -40,7 +40,7 @@ function woocommerce_ideal_init() {
 			$options = '';
 			$sisow->DirectoryRequest($options, false, $testmode);
 			
-			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
+			$text = '<b>'.__('Betalen met', 'sisow') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
 				$text .= '<br/><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
@@ -69,7 +69,7 @@ function woocommerce_ideal_init() {
             $this->issuerid = filter_input(INPUT_POST, 'sisow_bank');
 
             if (!$this->issuerid) {
-				wc_add_notice( __( 'Kies uw bank.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Kies uw bank.', 'sisow' ), 'error' );
                 return false;
             } else {
                 return true;

@@ -2,7 +2,7 @@
 Plugin Name: Sisow Payment for WooCommerce
 Contributors: sisow
 Donate link: http://www.sisow.nl
-Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro
+Tags: Sisow, iDEAL, Creditcard, WooCommerce, Payment, MisterCash, SofortBanking, OverBoeking, Ebill, Giftcard, PayPal, Visa, Mastercard, Maestro, Giropay, EPS, Focum
 Requires at least: 3.0.1
 Tested up to: 4.2.2
 Stable tag: 4.3.8
@@ -87,7 +87,7 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 
 == Changelog ==
 = 4.3.8 =
-* Better Focum validation
+* Better WPML integration
 
 = 4.3.7 =
 * Getissuer Fix
@@ -156,7 +156,7 @@ Contact WP-engine, this is an cache setting at their side, the returnURL may not
 
 == Upgrade Notice ==
 = 4.3.8 =
-Better Focum validation
+Better WPML integration
 
 = 4.3.7 =
 Getissuer Fix

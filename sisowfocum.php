@@ -38,7 +38,7 @@ function woocommerce_sisowfocum_init()
 					
 			$paymentfee_total = $this->getFee();
 			
-			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
+			$text = '<b>'.__('Betalen met', 'sisow') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
 				$text .= '</br><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
@@ -99,7 +99,7 @@ function woocommerce_sisowfocum_init()
 			
 			if(empty($_POST["focum_gender"]))
 			{
-				wc_add_notice( __( 'Selecteer uw geslacht.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Selecteer uw geslacht.', 'sisow' ), 'error' );
 				return false;
 			}
 			else
@@ -107,7 +107,7 @@ function woocommerce_sisowfocum_init()
 			
 			if(empty($_POST["focum_iban"]))
 			{
-				wc_add_notice( __( 'Voer uw IBAN in.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Voer uw IBAN in.', 'sisow' ), 'error' );
 				return false;
 			}
 			else
@@ -115,7 +115,7 @@ function woocommerce_sisowfocum_init()
 				
 			if(empty($_POST["focum_phone"]))
 			{
-				wc_add_notice( __( 'Voer uw telefoonnummer in', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Voer uw telefoonnummer in', 'sisow' ), 'error' );
 				return false;
 			}
 			else
@@ -123,7 +123,7 @@ function woocommerce_sisowfocum_init()
 
 			if(empty($_POST["focum_day"]))
 			{
-				wc_add_notice( __( 'Selecteer "dag" bij geboortedatum.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Selecteer "dag" bij geboortedatum.', 'sisow' ), 'error' );
 				return false;
 			}
 			else
@@ -131,7 +131,7 @@ function woocommerce_sisowfocum_init()
 				
 			if(empty($_POST["focum_month"]))
 			{
-				wc_add_notice( __( 'Selecteer "maand" bij geboortedatum.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Selecteer "maand" bij geboortedatum.', 'sisow' ), 'error' );
 				return false;
 			}
 			else
@@ -139,7 +139,7 @@ function woocommerce_sisowfocum_init()
 				
 			if(empty($_POST["focum_year"]))
 			{
-				wc_add_notice( __( 'Selecteer "jaar" bij geboortedatum.', 'woocommerce' ), 'error' );
+				wc_add_notice( __( 'Selecteer "jaar" bij geboortedatum.', 'sisow' ), 'error' );
 				return false;
 			}
 			else

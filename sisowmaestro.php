@@ -36,7 +36,7 @@ function woocommerce_maestro_init()
 		public function payment_fields() {
 			$paymentfee_total = $this->getFee();
 			
-			$text = '<b>'.__('Betalen met') . ' ' . $this->title . '</b>';
+			$text = '<b>'.__('Betalen met', 'sisow') . ' ' . $this->title . '</b>';
 			if($this->merchantId == '' || $this->merchantKey == '')
 				$text .= '<br/><b>Let op MerchantID/MerchantKey niet ingevuld, controleer de instellingen!</b>';
 			
