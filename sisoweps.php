@@ -3,7 +3,7 @@
   Plugin Name: WooCommerce Sisow EPS
   Plugin URI: http://www.sisow.nl
   Description: The Sisow EPS Plugin for WooCommerce
-  Version: 4.3.8
+  Version: 4.3.9
   Author: Sisow
   Author URI: http://www.sisow.nl
  */
